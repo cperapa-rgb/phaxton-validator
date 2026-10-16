@@ -1,0 +1,16 @@
+- id: REF-001
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: referencias
+  params: {check: existe}
+  descripcion: Toda hoja apunta a un fichero existente dentro del paquete.
+- id: REF-002
+  codigo_oficial: "FDA 1306"
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: referencias
+  params: {check: huerfanos}
+  descripcion: Todo fichero del arbol (salvo index, index-md5 y util) esta referenciado por una hoja. Severidad con fuente de agencia - FDA Specifications for eCTD Validation Criteria v4.6, criterio 1306 "No leaf element for file", severidad High (no se recibe el envio). EMA no comprobada.

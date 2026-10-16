@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ectd:study SYSTEM "../../../../../util/dtd/ich-stf-v2-2.dtd">
+<ectd:study xmlns:ectd="http://www.ich.org/ectd" xml:lang="en" dtd-version="2.2" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <study-identifier>
+    <title>Estudio PROT-DG1</title>
+    <study-id>PROT-DG1</study-id>
+  </study-identifier>
+  <study-document>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0007">
+      <file-tag name="data-tabulation-dataset" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0008">
+      <file-tag name="data-tabulation-dataset" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0009">
+      <file-tag name="data-tabulation-dataset" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0010">
+      <file-tag name="data-tabulation-dataset" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0001">
+      <file-tag name="analysis-dataset" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0011">
+      <file-tag name="data-tabulation-dataset" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0006">
+      <file-tag name="data-tabulation-data-definition" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0003">
+      <file-tag name="analysis-data-definition" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0005">
+      <file-tag name="study-data-reviewers-guide" info-type="us"/>
+    </doc-content>
+    <doc-content xlink:href="../../../../../index.xml#leaf-0002">
+      <file-tag name="analysis-data-reviewers-guide" info-type="us"/>
+    </doc-content>
+  </study-document>
+</ectd:study>

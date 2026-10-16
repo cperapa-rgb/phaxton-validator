@@ -1,0 +1,42 @@
+# Fuentes: embebido de fuentes = ICH eCTD 3.2.2 (cap. PDF, "Fonts"). Version y tamano son convenciones regionales
+# (guias FDA/EMA) NO verificadas en esta sesion: por eso son avisos y parametrizables.
+- id: PDF-001
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: pdf
+  params: {check: abre}
+  descripcion: Cada PDF referenciado se abre y su estructura se puede leer.
+- id: PDF-002
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: pdf
+  params: {check: cifrado}
+  descripcion: Ningun PDF esta cifrado.
+- id: PDF-003
+  codigo_oficial: null
+  severidad: aviso
+  region: regional
+  spec_version: "3.2.2"
+  checker: pdf
+  params: {check: version, min: [1, 4], max: [1, 7]}
+  descripcion: Version de PDF dentro del rango 1.4-1.7 (convencion regional, no de la spec ICH).
+- id: PDF-004
+  codigo_oficial: null
+  severidad: aviso
+  region: ich
+  spec_version: "3.2.2"
+  checker: pdf
+  params: {check: fuentes}
+  descripcion: Toda fuente que no sea Times New Roman, Arial o Courier esta embebida (Type3 exenta).
+- id: PDF-005
+  codigo_oficial: null
+  severidad: aviso
+  region: regional
+  spec_version: "3.2.2"
+  checker: pdf
+  params: {check: tamano, max_mb: 100}
+  descripcion: El PDF no esta vacio y no supera el umbral de tamano (convencion regional, no de la spec ICH).

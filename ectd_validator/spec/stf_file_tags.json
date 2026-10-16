@@ -1,0 +1,207 @@
+{
+  "_procedencia": "Tabla de valores de file-tag de ICH eCTD STF Specification v2.6.1 (3-jun-2008), paginas 8-10; los dos tags de guias del revisor vienen de la Study Data Technical Conformance Guide de FDA (oct. 2026), seccion 2.1 y 2.3, y NO estan en la tabla ICH. Ver PROCEDENCIA.md.",
+  "tags": {
+    "pre-clinical-study-report": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "legacy-clinical-study-report": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "synopsis": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "study-report-body": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "protocol-or-amendment": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "sample-case-report-form": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "iec-irb-consent-form-list": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "list-description-investigator-site": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "signatures-investigators": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "list-patients-with-batches": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "randomisation-scheme": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "audit-certificates-report": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "statistical-methods-interim-analysis-plan": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "inter-laboratory-standardisation-methods-quality-assurance": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "publications-based-on-study": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "publications-referenced-in-report": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "discontinued-patients": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "protocol-deviations": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "patients-excluded-from-efficacy-analysis": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "demographic-data": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "compliance-and-drug-concentration-data": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "individual-efficacy-response-data": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "adverse-event-listings": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "listing-individual-laboratory-measurements-by-patient": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "case-report-forms": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "available-on-request": {
+      "info_type": "ich",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "complete-patient-list": {
+      "info_type": "jp",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "serious-adverse-event-patient-list": {
+      "info_type": "jp",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "adverse-event-patient-list": {
+      "info_type": "jp",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "abnormal-lab-values-patient-list": {
+      "info_type": "jp",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "data-tabulation-dataset": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "data-tabulation-data-definition": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "data-listing-dataset": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "data-listing-data-definition": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "analysis-dataset": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "analysis-program": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "analysis-data-definition": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "annotated-crf": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "ecg": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "image": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "subject-profiles": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "safety-report": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "antibacterial": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "special-pathogen": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "antiviral": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "iss": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "ise": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "pm-description": {
+      "info_type": "us",
+      "fuente": "STF spec 2.6.1, tabla de file-tag"
+    },
+    "study-data-reviewers-guide": {
+      "info_type": "us",
+      "fuente": "FDA Study Data TCG (oct. 2026) 2.1: 'file-tagged as study-data-reviewers-guide'",
+      "nota": "info-type 'us' INFERIDO: la TCG no lo imprime y el tag no figura en la tabla ICH; la STF spec manda usar el valor regional cuando ICH no lo define"
+    },
+    "analysis-data-reviewers-guide": {
+      "info_type": "us",
+      "fuente": "FDA Study Data TCG (oct. 2026) 2.3: 'file-tagged as analysis-data-reviewers-guide'",
+      "nota": "info-type 'us' INFERIDO: la TCG no lo imprime y el tag no figura en la tabla ICH; la STF spec manda usar el valor regional cuando ICH no lo define"
+    }
+  }
+}

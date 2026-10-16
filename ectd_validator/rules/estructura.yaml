@@ -1,0 +1,25 @@
+# Limites de ICH eCTD Specification v3.2.2 (ver spec/PROCEDENCIA.md). Regional puede ser mas estricto.
+- id: STR-001
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: estructura
+  params: {check: nombres, max_nombre: 64}
+  descripcion: Nombres de carpeta/fichero solo a-z, 0-9 y guion; fichero con una extension; <=64 caracteres.
+- id: STR-002
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: estructura
+  params: {check: ruta, max_ruta: 230}
+  descripcion: La ruta relativa a la carpeta de la secuencia (carpetas y fichero) no supera 230 caracteres. La spec no define si cuenta el nivel superior (p.ej. numero-de-aplicacion/0000/); interpretacion declarada.
+- id: STR-003
+  codigo_oficial: null
+  severidad: aviso
+  region: ich
+  spec_version: "3.2.2"
+  checker: estructura
+  params: {check: raiz}
+  descripcion: La raiz de la secuencia solo contiene index.xml, index-md5.txt, util y m1..m5.

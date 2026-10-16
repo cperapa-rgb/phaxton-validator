@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ectd:ectd SYSTEM "util/dtd/ich-ectd-3-2.dtd">
+<ectd:ectd xmlns:ectd="http://www.ich.org/ectd" xmlns:xlink="http://www.w3c.org/1999/xlink">
+<m5-clinical-study-reports>
+  <m5-3-clinical-study-reports>
+    <m5-3-3-reports-of-human-pharmacokinetics-pk-studies>
+      <m5-3-3-1-healthy-subject-pk-and-initial-tolerability-study-reports>
+        <leaf ID="leaf-0001" operation="new" checksum="ece1071f6c0109da01d994dca83f776a" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/analysis/adam/datasets/adpc.xpt"><title>ADaM dataset ADPC</title></leaf>
+        <leaf ID="leaf-0002" operation="new" checksum="a3d466da63ec4d7cad6eb734e471560a" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/analysis/adam/datasets/adrg.pdf"><title>Analysis Data Reviewer's Guide</title></leaf>
+        <leaf ID="leaf-0003" operation="new" checksum="27e0f9b1fb68d46d91627410f9f0fdcb" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/analysis/adam/datasets/define.xml"><title>ADaM define.xml</title></leaf>
+        <leaf ID="leaf-0004" operation="new" version="STF version 2.2" checksum="0e34fd96597507e5f477866607586d4f" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/stf-prot-dg1.xml"><title>PROT-DG1 Study Tagging File</title></leaf>
+        <leaf ID="leaf-0005" operation="new" checksum="493c016c49ed7c4df5b1795829e971d0" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/tabulations/sdtm/csdrg.pdf"><title>Study Data Reviewer's Guide</title></leaf>
+        <leaf ID="leaf-0006" operation="new" checksum="0117ba5f96d49da77717f3b94caeb4fa" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/tabulations/sdtm/define.xml"><title>SDTM define.xml</title></leaf>
+        <leaf ID="leaf-0007" operation="new" checksum="557c2db898e93038396173b76e60a244" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/tabulations/sdtm/dm.xpt"><title>SDTM dataset DM</title></leaf>
+        <leaf ID="leaf-0008" operation="new" checksum="32071be1f6a5521dcc6fca7ca3cabcad" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/tabulations/sdtm/ex.xpt"><title>SDTM dataset EX</title></leaf>
+        <leaf ID="leaf-0009" operation="new" checksum="952984555df2f8cecaaf1b8b00527bd4" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/tabulations/sdtm/pc.xpt"><title>SDTM dataset PC</title></leaf>
+        <leaf ID="leaf-0010" operation="new" checksum="24b3df95ad1fa204483cf56f9193ceac" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/tabulations/sdtm/pp.xpt"><title>SDTM dataset PP</title></leaf>
+        <leaf ID="leaf-0011" operation="new" checksum="977a80d1359b31de70fd4cc901f8c524" checksum-type="md5" xlink:href="m5/53-clin-stud-rep/533-rep-human-pk-stud/5331-healthy-subj-pk-init-tol-stud-rep/estudio-phaxton/tabulations/sdtm/ts.xpt"><title>SDTM dataset TS</title></leaf>
+      </m5-3-3-1-healthy-subject-pk-and-initial-tolerability-study-reports>
+    </m5-3-3-reports-of-human-pharmacokinetics-pk-studies>
+  </m5-3-clinical-study-reports>
+</m5-clinical-study-reports>
+</ectd:ectd>

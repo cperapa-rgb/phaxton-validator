@@ -1,0 +1,33 @@
+# Reglas de checksums. codigo_oficial: null = regla PROPIA (no mapeada a un codigo FDA/EMA verificado).
+- id: CHK-001
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: checksums
+  params: {check: leaf_md5}
+  descripcion: El MD5 declarado por cada hoja del backbone coincide con el del fichero.
+- id: CHK-002
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: checksums
+  params: {check: leaf_declarado}
+  descripcion: Toda hoja declara checksum y checksum-type md5.
+- id: CHK-003
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: checksums
+  params: {check: index_md5}
+  descripcion: index-md5.txt existe y contiene el MD5 de index.xml.
+- id: CHK-004
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: checksums
+  params: {check: arbitro}
+  descripcion: El segundo arbitro de MD5 (herramienta del sistema, otra familia que hashlib) coincide con hashlib.

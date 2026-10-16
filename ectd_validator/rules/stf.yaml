@@ -1,0 +1,89 @@
+# Study Tagging Files v2.2 (ICH eCTD STF Specification v2.6.1; tags de guias: FDA Study Data TCG). Ver spec/PROCEDENCIA.md.
+- id: STF-001
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: dtd_valida}
+  descripcion: Cada STF esta bien formado y valida contra la DTD oficial ICH STF v2.2 versionada en el validador.
+- id: STF-002
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: file_tags}
+  descripcion: Todo file-tag tiene un name de la tabla de la STF spec 2.6.1 (o de la TCG de la FDA) y el info-type que la tabla le asigna.
+- id: STF-003
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: referencias}
+  descripcion: Todo doc-content apunta a index.xml#ID y el ID es una hoja existente del backbone.
+- id: STF-004
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: cobertura}
+  descripcion: Toda hoja bajo la carpeta del STF, salvo otros STF, esta etiquetada por algun doc-content del STF.
+- id: STF-005
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: nombre}
+  descripcion: El fichero del STF se llama stf-<study-id>.xml.
+- id: STF-006
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: version_hoja}
+  descripcion: La hoja del STF en index.xml lleva version="STF version 2.2".
+- id: STF-007
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: dtd_en_paquete}
+  descripcion: El paquete incluye util/dtd/ich-stf-v2-2.dtd idéntica a la oficial.
+- id: STF-008
+  codigo_oficial: null
+  severidad: aviso
+  region: us
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: sin_stf}
+  descripcion: Hay datasets .xpt en M4/M5 y ningun STF (FDA exige un STF por estudio; Japon no lo permite y Europa no lo exige). v0 solo mira datasets.
+- id: STF-009
+  codigo_oficial: null
+  severidad: error
+  region: us
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: ts_stf}
+  descripcion: El STUDYID de ts.xpt coincide con el study-id del STF (TCG, Apendice G); si difiere, TS declara SPREFID con el study-id del STF. ts.xpt se lee con un lector XPT propio e independiente del escritor.
+- id: STF-010
+  codigo_oficial: "FDA 1734"
+  severidad: error
+  region: us
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: ts_presente}
+  descripcion: Si el STF etiqueta datasets de tabulacion, hay un ts.xpt etiquetado data-tabulation-dataset en la carpeta del estudio (la FDA valida STF + TS).
+- id: STF-011
+  codigo_oficial: null
+  severidad: aviso
+  region: us
+  spec_version: "STF 2.2"
+  checker: stf
+  params: {check: ssd}
+  descripcion: ts.xpt lleva SSTDTC con fecha; sin ella la FDA no puede determinar la fecha de inicio del estudio (TCG, validacion de SSD).

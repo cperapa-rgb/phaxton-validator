@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "phaxton-validator"
+version = "0.6.0"
+description = "Technical validator for eCTD v3.2.2 packages (Module 5 focus): checks form, repairs only on a copy"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "GPL-3.0-only" }
+classifiers = [
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Programming Language :: Python :: 3",
+  "Development Status :: 3 - Alpha",
+]
+dependencies = ["lxml>=5.0.0", "PyYAML>=6.0", "pypdf>=4.0.0", "pikepdf>=8.0.0", "reportlab>=4.0.0"]
+
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+
+[project.scripts]
+phaxton-validator = "ectd_validator.__main__:main"
+
+[tool.setuptools]
+packages = { find = { include = ["ectd_validator*"] } }
+
+[tool.setuptools.package-data]
+ectd_validator = ["rules/*.yaml", "spec/*.dtd", "spec/*.json", "spec/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tests"]

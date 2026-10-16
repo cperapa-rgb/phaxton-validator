@@ -1,0 +1,40 @@
+- id: BBN-001
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: dtd_valida}
+  descripcion: index.xml es valido contra la DTD oficial ICH eCTD 3.2 (versionada en spec/).
+- id: BBN-002
+  codigo_oficial: null
+  severidad: aviso
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: doctype}
+  descripcion: El DOCTYPE de index.xml apunta a util/dtd/ich-ectd-3-2.dtd.
+- id: BBN-003
+  codigo_oficial: "FDA 1119"
+  severidad: aviso
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: dtd_presente}
+  descripcion: El paquete incluye util/dtd/ich-ectd-3-2.dtd. Severidad con fuente de agencia - FDA Specifications for eCTD Validation Criteria v4.6, criterio 1119 "Missing required file" (fichero requerido de la carpeta util), severidad Medium (puede afectar a la revisabilidad; el envio puede considerarse recibido), de ahi aviso y no error. EMA no comprobada.
+- id: BBN-004
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: dtd_intacta}
+  descripcion: La DTD incluida en el paquete es identica a la oficial (no alterada).
+- id: BBN-005
+  codigo_oficial: null
+  severidad: aviso
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: xml_limpio}
+  descripcion: index.xml es UTF-8 sin BOM, sin caracteres invisibles y con la codificacion declarada UTF-8.

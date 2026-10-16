@@ -1,0 +1,388 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3" xmlns:def="http://www.cdisc.org/ns/def/v2.0" xmlns:xlink="http://www.w3.org/1999/xlink" ODMVersion="1.3.2" FileType="Snapshot" FileOID="DEFINE.PROT-DG1" CreationDateTime="2026-10-16T13:08:50" Granularity="Metadata" AsOfDateTime="2026-10-16T13:08:50" Originator="PHAXTON" SourceSystem="PHAXTON" SourceSystemVersion="0.1.0">
+  <Study OID="STUDY.PROT-DG1">
+    <GlobalVariables>
+      <StudyName>Estudio PROT-DG1</StudyName>
+      <StudyDescription>Estudio PROT-DG1</StudyDescription>
+      <ProtocolName>PROT-DG1</ProtocolName>
+    </GlobalVariables>
+    <MetaDataVersion OID="MDV.PROT-DG1" Name="Metadata PROT-DG1" def:DefineVersion="2.0.0" def:StandardName="SDTM-IG" def:StandardVersion="3.2" Description="Metadatos de los datasets del paquete (generados desde las specs de los XPT)">
+      <ItemGroupDef OID="IG.DM" Name="DM" Repeating="Yes" IsReferenceData="No" Purpose="Tabulation" Domain="DM" SASDatasetName="DM" def:Structure="One record per subject" def:Class="SPECIAL PURPOSE" def:ArchiveLocationID="LF.DM">
+        <Description>
+          <TranslatedText xml:lang="en">Demographics</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.DM.STUDYID" OrderNumber="1" Mandatory="Yes" Role="Identifier" KeySequence="1"/>
+        <ItemRef ItemOID="IT.DM.DOMAIN" OrderNumber="2" Mandatory="Yes" Role="Identifier"/>
+        <ItemRef ItemOID="IT.DM.USUBJID" OrderNumber="3" Mandatory="Yes" Role="Identifier" KeySequence="2"/>
+        <ItemRef ItemOID="IT.DM.SUBJID" OrderNumber="4" Mandatory="Yes" Role="Topic"/>
+        <ItemRef ItemOID="IT.DM.AGE" OrderNumber="5" Mandatory="No" Role="Record Qualifier"/>
+        <ItemRef ItemOID="IT.DM.AGEU" OrderNumber="6" Mandatory="No" Role="Variable Qualifier"/>
+        <ItemRef ItemOID="IT.DM.SEX" OrderNumber="7" Mandatory="Yes" Role="Record Qualifier"/>
+        <ItemRef ItemOID="IT.DM.ARM" OrderNumber="8" Mandatory="Yes" Role="Synonym Qualifier"/>
+        <def:leaf ID="LF.DM" xlink:href="data/DM.xpt">
+          <def:title>DM.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef OID="IG.EX" Name="EX" Repeating="Yes" IsReferenceData="No" Purpose="Tabulation" Domain="EX" SASDatasetName="EX" def:Structure="One record per constant dosing interval per subject" def:Class="INTERVENTIONS" def:ArchiveLocationID="LF.EX">
+        <Description>
+          <TranslatedText xml:lang="en">Exposure</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.EX.STUDYID" OrderNumber="1" Mandatory="Yes" Role="Identifier" KeySequence="1"/>
+        <ItemRef ItemOID="IT.EX.DOMAIN" OrderNumber="2" Mandatory="Yes" Role="Identifier"/>
+        <ItemRef ItemOID="IT.EX.USUBJID" OrderNumber="3" Mandatory="Yes" Role="Identifier" KeySequence="2"/>
+        <ItemRef ItemOID="IT.EX.EXSEQ" OrderNumber="4" Mandatory="Yes" Role="Identifier" KeySequence="3"/>
+        <ItemRef ItemOID="IT.EX.EXTRT" OrderNumber="5" Mandatory="Yes" Role="Topic"/>
+        <ItemRef ItemOID="IT.EX.EXDOSE" OrderNumber="6" Mandatory="No" Role="Record Qualifier"/>
+        <ItemRef ItemOID="IT.EX.EXDOSU" OrderNumber="7" Mandatory="No" Role="Variable Qualifier"/>
+        <ItemRef ItemOID="IT.EX.EXROUTE" OrderNumber="8" Mandatory="No" Role="Variable Qualifier"/>
+        <ItemRef ItemOID="IT.EX.EXSTDTC" OrderNumber="9" Mandatory="No" Role="Timing"/>
+        <def:leaf ID="LF.EX" xlink:href="data/EX.xpt">
+          <def:title>EX.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef OID="IG.PC" Name="PC" Repeating="Yes" IsReferenceData="No" Purpose="Tabulation" Domain="PC" SASDatasetName="PC" def:Structure="One record per sample characteristic or time-point concentration per subject" def:Class="FINDINGS" def:ArchiveLocationID="LF.PC">
+        <Description>
+          <TranslatedText xml:lang="en">Pharmacokinetics Concentrations</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.PC.STUDYID" OrderNumber="1" Mandatory="Yes" Role="Identifier" KeySequence="1"/>
+        <ItemRef ItemOID="IT.PC.DOMAIN" OrderNumber="2" Mandatory="Yes" Role="Identifier"/>
+        <ItemRef ItemOID="IT.PC.USUBJID" OrderNumber="3" Mandatory="Yes" Role="Identifier" KeySequence="2"/>
+        <ItemRef ItemOID="IT.PC.PCSEQ" OrderNumber="4" Mandatory="Yes" Role="Identifier" KeySequence="3"/>
+        <ItemRef ItemOID="IT.PC.PCTESTCD" OrderNumber="5" Mandatory="Yes" Role="Topic"/>
+        <ItemRef ItemOID="IT.PC.PCTEST" OrderNumber="6" Mandatory="Yes" Role="Synonym Qualifier"/>
+        <ItemRef ItemOID="IT.PC.PCORRES" OrderNumber="7" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.PC.PCSTRESN" OrderNumber="8" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.PC.PCSTRESU" OrderNumber="9" Mandatory="No" Role="Variable Qualifier"/>
+        <ItemRef ItemOID="IT.PC.PCDTC" OrderNumber="10" Mandatory="No" Role="Timing"/>
+        <ItemRef ItemOID="IT.PC.PCTPTNUM" OrderNumber="11" Mandatory="No" Role="Timing"/>
+        <def:leaf ID="LF.PC" xlink:href="data/PC.xpt">
+          <def:title>PC.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef OID="IG.PP" Name="PP" Repeating="Yes" IsReferenceData="No" Purpose="Tabulation" Domain="PP" SASDatasetName="PP" def:Structure="One record per PK parameter per time-concentration profile per subject" def:Class="FINDINGS" def:ArchiveLocationID="LF.PP">
+        <Description>
+          <TranslatedText xml:lang="en">Pharmacokinetics Parameters</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.PP.STUDYID" OrderNumber="1" Mandatory="Yes" Role="Identifier" KeySequence="1"/>
+        <ItemRef ItemOID="IT.PP.DOMAIN" OrderNumber="2" Mandatory="Yes" Role="Identifier"/>
+        <ItemRef ItemOID="IT.PP.USUBJID" OrderNumber="3" Mandatory="Yes" Role="Identifier" KeySequence="2"/>
+        <ItemRef ItemOID="IT.PP.PPSEQ" OrderNumber="4" Mandatory="Yes" Role="Identifier" KeySequence="3"/>
+        <ItemRef ItemOID="IT.PP.PPTESTCD" OrderNumber="5" Mandatory="Yes" Role="Topic"/>
+        <ItemRef ItemOID="IT.PP.PPTEST" OrderNumber="6" Mandatory="Yes" Role="Synonym Qualifier"/>
+        <ItemRef ItemOID="IT.PP.PPORRES" OrderNumber="7" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.PP.PPSTRESN" OrderNumber="8" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.PP.PPSTRESU" OrderNumber="9" Mandatory="No" Role="Variable Qualifier"/>
+        <def:leaf ID="LF.PP" xlink:href="data/PP.xpt">
+          <def:title>PP.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemGroupDef OID="IG.TS" Name="TS" Repeating="Yes" IsReferenceData="No" Purpose="Tabulation" Domain="TS" SASDatasetName="TS" def:Structure="One record per trial summary parameter value" def:Class="TRIAL DESIGN" def:ArchiveLocationID="LF.TS">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Summary</TranslatedText>
+        </Description>
+        <ItemRef ItemOID="IT.TS.STUDYID" OrderNumber="1" Mandatory="Yes" Role="Identifier" KeySequence="1"/>
+        <ItemRef ItemOID="IT.TS.DOMAIN" OrderNumber="2" Mandatory="Yes" Role="Identifier"/>
+        <ItemRef ItemOID="IT.TS.TSSEQ" OrderNumber="3" Mandatory="Yes" Role="Identifier" KeySequence="3"/>
+        <ItemRef ItemOID="IT.TS.TSGRPID" OrderNumber="4" Mandatory="No" Role="Identifier"/>
+        <ItemRef ItemOID="IT.TS.TSPARMCD" OrderNumber="5" Mandatory="Yes" Role="Topic" KeySequence="2"/>
+        <ItemRef ItemOID="IT.TS.TSPARM" OrderNumber="6" Mandatory="Yes" Role="Synonym Qualifier"/>
+        <ItemRef ItemOID="IT.TS.TSVAL" OrderNumber="7" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.TS.TSVALNF" OrderNumber="8" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.TS.TSVALCD" OrderNumber="9" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.TS.TSVCDREF" OrderNumber="10" Mandatory="No" Role="Result Qualifier"/>
+        <ItemRef ItemOID="IT.TS.TSVCDVER" OrderNumber="11" Mandatory="No" Role="Result Qualifier"/>
+        <def:leaf ID="LF.TS" xlink:href="data/TS.xpt">
+          <def:title>TS.xpt</def:title>
+        </def:leaf>
+      </ItemGroupDef>
+      <ItemDef OID="IT.DM.STUDYID" Name="STUDYID" DataType="text" Length="20" SASFieldName="STUDYID">
+        <Description>
+          <TranslatedText xml:lang="en">Study Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.DOMAIN" Name="DOMAIN" DataType="text" Length="2" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.USUBJID" Name="USUBJID" DataType="text" Length="40" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.SUBJID" Name="SUBJID" DataType="text" Length="20" SASFieldName="SUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Subject Identifier for the Study</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.AGE" Name="AGE" DataType="float" Length="8" SASFieldName="AGE">
+        <Description>
+          <TranslatedText xml:lang="en">Age</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.AGEU" Name="AGEU" DataType="text" Length="10" SASFieldName="AGEU">
+        <Description>
+          <TranslatedText xml:lang="en">Age Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.SEX" Name="SEX" DataType="text" Length="1" SASFieldName="SEX">
+        <Description>
+          <TranslatedText xml:lang="en">Sex</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.DM.ARM" Name="ARM" DataType="text" Length="40" SASFieldName="ARM">
+        <Description>
+          <TranslatedText xml:lang="en">Description of Planned Arm</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.STUDYID" Name="STUDYID" DataType="text" Length="20" SASFieldName="STUDYID">
+        <Description>
+          <TranslatedText xml:lang="en">Study Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.DOMAIN" Name="DOMAIN" DataType="text" Length="2" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.USUBJID" Name="USUBJID" DataType="text" Length="40" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.EXSEQ" Name="EXSEQ" DataType="float" Length="8" SASFieldName="EXSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.EXTRT" Name="EXTRT" DataType="text" Length="40" SASFieldName="EXTRT">
+        <Description>
+          <TranslatedText xml:lang="en">Name of Treatment</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.EXDOSE" Name="EXDOSE" DataType="float" Length="8" SASFieldName="EXDOSE">
+        <Description>
+          <TranslatedText xml:lang="en">Dose</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.EXDOSU" Name="EXDOSU" DataType="text" Length="10" SASFieldName="EXDOSU">
+        <Description>
+          <TranslatedText xml:lang="en">Dose Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.EXROUTE" Name="EXROUTE" DataType="text" Length="20" SASFieldName="EXROUTE">
+        <Description>
+          <TranslatedText xml:lang="en">Route of Administration</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.EX.EXSTDTC" Name="EXSTDTC" DataType="text" Length="20" SASFieldName="EXSTDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Start Date/Time of Treatment</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.STUDYID" Name="STUDYID" DataType="text" Length="20" SASFieldName="STUDYID">
+        <Description>
+          <TranslatedText xml:lang="en">Study Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.DOMAIN" Name="DOMAIN" DataType="text" Length="2" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.USUBJID" Name="USUBJID" DataType="text" Length="40" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCSEQ" Name="PCSEQ" DataType="float" Length="8" SASFieldName="PCSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCTESTCD" Name="PCTESTCD" DataType="text" Length="8" SASFieldName="PCTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Pharmacokinetic Test Short Name</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCTEST" Name="PCTEST" DataType="text" Length="40" SASFieldName="PCTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Pharmacokinetic Test Name</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCORRES" Name="PCORRES" DataType="text" Length="40" SASFieldName="PCORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Finding in Original Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCSTRESN" Name="PCSTRESN" DataType="float" Length="8" SASFieldName="PCSTRESN">
+        <Description>
+          <TranslatedText xml:lang="en">Numeric Result/Finding in Standard Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCSTRESU" Name="PCSTRESU" DataType="text" Length="20" SASFieldName="PCSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Standard Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCDTC" Name="PCDTC" DataType="text" Length="20" SASFieldName="PCDTC">
+        <Description>
+          <TranslatedText xml:lang="en">Date/Time of Specimen Collection</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PC.PCTPTNUM" Name="PCTPTNUM" DataType="float" Length="8" SASFieldName="PCTPTNUM">
+        <Description>
+          <TranslatedText xml:lang="en">Planned Time Point Number</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.STUDYID" Name="STUDYID" DataType="text" Length="20" SASFieldName="STUDYID">
+        <Description>
+          <TranslatedText xml:lang="en">Study Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.DOMAIN" Name="DOMAIN" DataType="text" Length="2" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.USUBJID" Name="USUBJID" DataType="text" Length="40" SASFieldName="USUBJID">
+        <Description>
+          <TranslatedText xml:lang="en">Unique Subject Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.PPSEQ" Name="PPSEQ" DataType="float" Length="8" SASFieldName="PPSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.PPTESTCD" Name="PPTESTCD" DataType="text" Length="8" SASFieldName="PPTESTCD">
+        <Description>
+          <TranslatedText xml:lang="en">Parameter Short Name</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.PPTEST" Name="PPTEST" DataType="text" Length="40" SASFieldName="PPTEST">
+        <Description>
+          <TranslatedText xml:lang="en">Parameter Name</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.PPORRES" Name="PPORRES" DataType="text" Length="40" SASFieldName="PPORRES">
+        <Description>
+          <TranslatedText xml:lang="en">Result or Finding in Original Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.PPSTRESN" Name="PPSTRESN" DataType="float" Length="8" SASFieldName="PPSTRESN">
+        <Description>
+          <TranslatedText xml:lang="en">Numeric Result/Finding in Standard Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.PP.PPSTRESU" Name="PPSTRESU" DataType="text" Length="20" SASFieldName="PPSTRESU">
+        <Description>
+          <TranslatedText xml:lang="en">Standard Units</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.STUDYID" Name="STUDYID" DataType="text" Length="20" SASFieldName="STUDYID">
+        <Description>
+          <TranslatedText xml:lang="en">Study Identifier</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.DOMAIN" Name="DOMAIN" DataType="text" Length="2" SASFieldName="DOMAIN">
+        <Description>
+          <TranslatedText xml:lang="en">Domain Abbreviation</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSSEQ" Name="TSSEQ" DataType="float" Length="8" SASFieldName="TSSEQ">
+        <Description>
+          <TranslatedText xml:lang="en">Sequence Number</TranslatedText>
+        </Description>
+        <def:Origin Type="Derived"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSGRPID" Name="TSGRPID" DataType="text" Length="20" SASFieldName="TSGRPID">
+        <Description>
+          <TranslatedText xml:lang="en">Group ID</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSPARMCD" Name="TSPARMCD" DataType="text" Length="8" SASFieldName="TSPARMCD">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Summary Parameter Short Name</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSPARM" Name="TSPARM" DataType="text" Length="40" SASFieldName="TSPARM">
+        <Description>
+          <TranslatedText xml:lang="en">Trial Summary Parameter</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSVAL" Name="TSVAL" DataType="text" Length="200" SASFieldName="TSVAL">
+        <Description>
+          <TranslatedText xml:lang="en">Parameter Value</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSVALNF" Name="TSVALNF" DataType="text" Length="8" SASFieldName="TSVALNF">
+        <Description>
+          <TranslatedText xml:lang="en">Parameter Null Flavor</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSVALCD" Name="TSVALCD" DataType="text" Length="40" SASFieldName="TSVALCD">
+        <Description>
+          <TranslatedText xml:lang="en">Parameter Value Code</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSVCDREF" Name="TSVCDREF" DataType="text" Length="20" SASFieldName="TSVCDREF">
+        <Description>
+          <TranslatedText xml:lang="en">Name of the Reference Terminology</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+      <ItemDef OID="IT.TS.TSVCDVER" Name="TSVCDVER" DataType="text" Length="20" SASFieldName="TSVCDVER">
+        <Description>
+          <TranslatedText xml:lang="en">Version of the Reference Terminology</TranslatedText>
+        </Description>
+        <def:Origin Type="Collected"/>
+      </ItemDef>
+    </MetaDataVersion>
+  </Study>
+</ODM>

@@ -7,12 +7,26 @@ from .engine import validar_paquete, carpetas, VERSION, AVISO_PREPARATORIO
 _SALIDA = {"VALIDO": 0, "VALIDO_CON_AVISOS": 0, "CON_ERRORES": 1, "NO_VALIDABLE": 2}
 
 
+def huella_codigo() -> str:
+    """SHA-256 de los ficheros del paquete (fines de linea normalizados, orden por ruta posix): cambia si cambia el codigo o la spec,
+    aunque la version no suba. El consumidor la usa para que su evidencia caduque con el validador."""
+    import hashlib
+    from pathlib import Path
+    raiz = Path(__file__).resolve().parent
+    h = hashlib.sha256()
+    crlf, lf, nul = bytes([13, 10]), bytes([10]), bytes([0])
+    for f in sorted(raiz.rglob("*"), key=lambda q: q.relative_to(raiz.parent).as_posix()):
+        if f.is_file() and "__pycache__" not in f.parts and f.suffix != ".pyc":
+            h.update(f.relative_to(raiz.parent).as_posix().encode() + nul + f.read_bytes().replace(crlf, lf))
+    return h.hexdigest()
+
+
 def _info() -> dict:
     """Todo lo que un consumidor (p. ej. el escritor de backbones) necesita del validador SIN importarlo: datos, no codigo."""
     from pathlib import Path
     from .checkers import backbone, stf
     spec = Path(backbone.DTD_OFICIAL).parent
-    return {"version": VERSION, "aviso_preparatorio": AVISO_PREPARATORIO, "spec_dir": str(spec),
+    return {"version": VERSION, "huella_codigo": huella_codigo(), "aviso_preparatorio": AVISO_PREPARATORIO, "spec_dir": str(spec),
             "dtd_ectd": str(backbone.DTD_OFICIAL), "dtd_ectd_en_paquete": backbone.DTD_EN_PAQUETE,
             "dtd_stf": str(stf.DTD_STF), "dtd_stf_en_paquete": stf.DTD_STF_EN_PAQUETE, "version_hoja_stf": stf.VERSION_HOJA,
             "carpetas": carpetas(), "stf_tags": stf.tags_validos()}

@@ -56,3 +56,19 @@ def test_informe_desde_sin_informe_dir_falla():
 def test_sin_paquete_ni_modo_falla_explicito():
     r = _cli()
     assert r.returncode == 2 and "falta la carpeta" in r.stderr
+
+
+def test_info_trae_la_huella_del_codigo_y_es_estable_y_cambia_con_el_codigo(tmp_path, monkeypatch):
+    a = json.loads(_cli("--info").stdout)["huella_codigo"]
+    b = json.loads(_cli("--info").stdout)["huella_codigo"]
+    assert a == b and len(a) == 64                           # estable entre procesos
+    from ectd_validator import __main__ as M
+    from pathlib import Path
+    # visto fallar: un fichero nuevo en el paquete cambia la huella aunque la version no suba
+    extra = Path(M.__file__).parent / "_huella_prueba.txt"
+    try:
+        extra.write_text("x", encoding="utf-8")
+        assert M.huella_codigo() != a
+    finally:
+        extra.unlink()
+    assert M.huella_codigo() == a

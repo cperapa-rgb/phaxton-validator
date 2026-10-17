@@ -32,6 +32,8 @@ GPL-3.0. Built by Phaxton — the suite that takes small labs from the
 concentration CSV to an eCTD-ready M5 data package. Landing: see the
 repository description (free Render URL until the domain exists).
 
+Third-party licence note: the PDF report checks that fonts are embedded using PyMuPDF, which is licensed under AGPL-3.0. This tool is distributed under GPL-3.0; combined with PyMuPDF, the AGPL-3.0 terms (including section 13, use over a network) also apply to the combined work.
+
 ---
 
 This is a PREPARATORY tool for regulatory submissions. It checks and prepares

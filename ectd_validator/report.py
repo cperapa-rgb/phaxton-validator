@@ -94,7 +94,10 @@ def _registrar_fuente() -> None:
 
 def comprobar_fuentes_embebidas(ruta) -> None:
     """Toda fuente de cada pagina debe tener fichero de fuente (PyMuPDF); si no, RuntimeError (no verde)."""
-    import fitz
+    try:
+        import pymupdf as fitz   # PyMuPDF reciente: 'import fitz' imprime un aviso por stdout y rompe el JSON del CLI
+    except ImportError:
+        import fitz
     malas = set()
     with fitz.open(str(ruta)) as doc:
         for pg in doc:

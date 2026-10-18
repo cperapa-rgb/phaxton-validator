@@ -27,6 +27,15 @@ def run(ctx, rule: dict) -> List[dict]:
     return _CHECKS[rule["params"]["check"]](ctx, rule)
 
 
+def _estudio(carpeta: str) -> str:
+    """Raiz del estudio: el layout de datos de la FDA separa SDTM (<estudio>/tabulations/sdtm) y ADaM (<estudio>/analysis/adam/datasets)
+    en carpetas distintas; ambos pertenecen al mismo estudio. Fuera de ese layout, la carpeta del fichero es el estudio."""
+    for sufijo in ("/tabulations/sdtm", "/analysis/adam/datasets"):
+        if carpeta.endswith(sufijo):
+            return carpeta[: -len(sufijo)]
+    return carpeta
+
+
 def _carpetas(ctx) -> Dict[str, Dict[str, Path]]:
     """carpeta -> {nombre sin extension en minuscula: ruta} de los .xpt de M4/M5 que son SDTM o ADaM conocidos."""
     out: Dict[str, Dict[str, Path]] = defaultdict(dict)
@@ -39,7 +48,7 @@ def _carpetas(ctx) -> Dict[str, Dict[str, Path]]:
             continue
         p = ctx.resolver(href)
         if p is not None and p.is_file():
-            out[href.rsplit("/", 1)[0]][nombre] = p
+            out[_estudio(href.rsplit("/", 1)[0])][nombre] = p
     return out
 
 

@@ -59,8 +59,15 @@ def _bytes(variables, filas):
     return _xpt_a_mano(spec, cuerpo)
 
 
-def _paquete(tmp_path, datos, quitar=()):
-    ficheros = {F.BASE + "%s.xpt" % k: _bytes(*v) for k, v in datos.items() if k not in quitar}
+def _ruta(k, layout):
+    if layout == "fda":      # layout real de la FDA: SDTM y ADaM en carpetas hermanas del mismo estudio
+        sub = "analysis/adam/datasets/" if k.startswith("ad") else "tabulations/sdtm/"
+        return F.BASE + sub + "%s.xpt" % k
+    return F.BASE + "%s.xpt" % k
+
+
+def _paquete(tmp_path, datos, quitar=(), layout="plano"):
+    ficheros = {_ruta(k, layout): _bytes(*v) for k, v in datos.items() if k not in quitar}
     viejo = F.FICHEROS
     F.FICHEROS = ficheros
     try:
@@ -84,6 +91,15 @@ def test_la_linea_base_ejecuta_las_cinco_reglas_y_no_dice_nada(tmp_path):
     inf = _inf(tmp_path)
     assert COH <= set(inf["reglas_ejecutadas"]), inf["reglas_no_ejecutadas"]
     assert _coh(inf) == set(), inf["hallazgos"]
+
+
+def test_con_el_layout_de_la_fda_sdtm_y_adam_en_carpetas_hermanas_las_reglas_se_ejecutan_y_ven_el_defecto(tmp_path):
+    datos = _base()
+    inf = validar_paquete(_paquete(tmp_path / "a", datos, layout="fda"))
+    assert COH <= set(inf["reglas_ejecutadas"]) and _coh(inf) == set(), inf["reglas_no_ejecutadas"]
+    datos["adpp"][1][0][3] = 5.0
+    inf = validar_paquete(_paquete(tmp_path / "b", datos, layout="fda"))
+    assert _coh(inf) == {"COH-005"}
 
 
 def test_sin_adam_las_cinco_reglas_se_declaran_no_ejecutadas_nunca_verde(tmp_path):

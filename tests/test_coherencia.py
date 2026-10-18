@@ -207,12 +207,20 @@ def test_adnca_con_registros_ex_y_sin_ex_xpt_es_un_error_no_un_no_aplica(tmp_pat
     assert any(h["regla"] == "COH-004" and h["severidad"] == "error" and "ex.xpt" in h["mensaje"] for h in inf["hallazgos"])
 
 
-def test_adnca_sin_registros_ex_no_da_error_y_la_regla_se_declara_no_ejecutada(tmp_path):
+def test_adnca_sin_registros_ex_con_ex_xpt_presente_da_un_aviso_visible_no_un_error_ni_un_silencio(tmp_path):
     def m(d):
         d["adnca"] = (d["adnca"][0], [f for f in d["adnca"][1] if f[3] == "PC"])
     inf = _inf(tmp_path, m)
-    assert "COH-004" not in _coh(inf) and "COH-004" not in inf["reglas_ejecutadas"]
-    assert "COH-004" in {r["regla"] for r in inf["reglas_no_ejecutadas"]}
+    h = [x for x in inf["hallazgos"] if x["regla"] == "COH-004"]
+    assert len(h) == 1 and h[0]["severidad"] == "aviso" and "ningun registro con SRCDOM=EX" in h[0]["mensaje"], inf["hallazgos"]
+    assert "COH-004" in inf["reglas_ejecutadas"] and not [x for x in inf["hallazgos"] if x["regla"] in COH and x["severidad"] == "error"]
+
+
+def test_adnca_sin_registros_ex_y_sin_ex_xpt_la_regla_no_aplica_y_se_declara(tmp_path):
+    def m(d):
+        d["adnca"] = (d["adnca"][0], [f for f in d["adnca"][1] if f[3] == "PC"])
+    inf = _inf(tmp_path, m, quitar=("ex",))
+    assert "COH-004" in {r["regla"] for r in inf["reglas_no_ejecutadas"]} and "COH-004" not in {h["regla"] for h in inf["hallazgos"]}
 
 
 @pytest.mark.parametrize("valor", ["pc", "", "XX"])

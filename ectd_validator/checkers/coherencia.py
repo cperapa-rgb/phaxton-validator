@@ -197,7 +197,11 @@ def _trazas(ctx, rule, adam, dom):
                         adam.upper(), str(f.get("USUBJID", "")), d, sorted(permitidos))))
         filas = [f for f in la[1] if str(f.get("SRCDOM", "")) == dom]
         if not filas:
-            continue            # este ADaM no tiene registros de este origen: la regla no aplica a este estudio
+            if nombre_o in ds:   # el estudio TIENE el dataset de origen y el ADaM no lo usa: aviso visible (nunca silencio); sin dataset, no aplica
+                h = hallazgo(rule, ev, "%s no tiene ningun registro con SRCDOM=%s aunque el estudio trae %s.xpt: nada que trazar contra ese dataset" % (adam.upper(), dom, nombre_o))
+                h["severidad"] = "aviso"
+                out.append(h)
+            continue
         if nombre_o not in ds:
             out.append(hallazgo(rule, ev, "%s tiene %d registros con SRCDOM=%s y el estudio no tiene %s.xpt: no hay a que apuntar" % (
                 adam.upper(), len(filas), dom, nombre_o)))

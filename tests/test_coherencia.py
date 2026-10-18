@@ -112,7 +112,7 @@ def test_coh_001_un_usubjid_del_adam_que_no_esta_en_dm(tmp_path):
     def m(d):
         d["adnca"][1][3][1] = "S1-99"
     inf = _inf(tmp_path, m)
-    assert "COH-001" in _coh(inf)
+    assert _coh(inf) == {"COH-001", "COH-004"}      # la fila mutada es una dosis (SRCDOM=EX): tambien deja de trazarse a EX
     assert any("S1-99" in h["mensaje"] for h in inf["hallazgos"] if h["regla"] == "COH-001")
 
 
@@ -121,7 +121,7 @@ def test_coh_002_dos_studyid_en_el_mismo_estudio(tmp_path):
         for f in d["adpp"][1]:
             f[0] = "OTRO"
     inf = _inf(tmp_path, m)
-    assert "COH-002" in _coh(inf)
+    assert _coh(inf) == {"COH-002"}
 
 
 def test_coh_003_el_aval_de_adnca_no_es_el_pcstresn(tmp_path):
@@ -185,3 +185,112 @@ def test_un_fallo_sistematico_no_inunda_el_informe(tmp_path):
     inf = _inf(tmp_path, m)
     n = [h for h in inf["hallazgos"] if h["regla"] == "COH-003"]
     assert 0 < len(n) <= 21 and "mas de la misma regla" in n[-1]["mensaje"]
+
+
+def _con(tmp_path, ficheros):
+    viejo = F.FICHEROS
+    F.FICHEROS = ficheros
+    try:
+        return validar_paquete(F.construir(tmp_path / "0000"))
+    finally:
+        F.FICHEROS = viejo
+
+
+def _quitar_var(d, ds, var):
+    vs, fs = d[ds]
+    i = [n for n, _t in vs].index(var)
+    d[ds] = ([v for v in vs if v[0] != var], [f[:i] + f[i + 1:] for f in fs])
+
+
+def test_adnca_con_registros_ex_y_sin_ex_xpt_es_un_error_no_un_no_aplica(tmp_path):
+    inf = _inf(tmp_path, quitar=("ex",))
+    assert any(h["regla"] == "COH-004" and h["severidad"] == "error" and "ex.xpt" in h["mensaje"] for h in inf["hallazgos"])
+
+
+def test_adnca_sin_registros_ex_no_da_error_y_la_regla_se_declara_no_ejecutada(tmp_path):
+    def m(d):
+        d["adnca"] = (d["adnca"][0], [f for f in d["adnca"][1] if f[3] == "PC"])
+    inf = _inf(tmp_path, m)
+    assert "COH-004" not in _coh(inf) and "COH-004" not in inf["reglas_ejecutadas"]
+    assert "COH-004" in {r["regla"] for r in inf["reglas_no_ejecutadas"]}
+
+
+@pytest.mark.parametrize("valor", ["pc", "", "XX"])
+def test_un_srcdom_fuera_del_conjunto_es_un_hallazgo(tmp_path, valor):
+    def m(d):
+        d["adnca"][1][1][3] = valor
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-003" and "SRCDOM" in h["mensaje"] for h in inf["hallazgos"]), inf["hallazgos"]
+
+
+def test_una_clave_duplicada_en_el_origen_es_un_hallazgo(tmp_path):
+    def m(d):
+        d["pc"][1][1][2] = 1                      # S1-01 PCSEQ 1 dos veces
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-003" and "repetida" in h["mensaje"] for h in inf["hallazgos"])
+
+
+@pytest.mark.parametrize("seq,texto", [(1.5, "no entero"), (None, "no entero")])
+def test_un_srcseq_no_entero_o_ausente_nunca_se_redondea_ni_casa(tmp_path, seq, texto):
+    def m(d):
+        d["adnca"][1][1][4] = seq
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-003" and texto in h["mensaje"] for h in inf["hallazgos"]), inf["hallazgos"]
+
+
+def test_un_origen_sin_la_variable_que_el_cruce_necesita_se_dice(tmp_path):
+    def m(d):
+        _quitar_var(d, "pc", "PCSTRESN")
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-003" and "PCSTRESN" in h["mensaje"] for h in inf["hallazgos"])
+
+
+def test_adpp_sin_paramcd_se_dice(tmp_path):
+    def m(d):
+        _quitar_var(d, "adpp", "PARAMCD")
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-005" and "PARAMCD" in h["mensaje"] for h in inf["hallazgos"])
+
+
+def test_dm_sin_usubjid_se_dice_con_su_motivo(tmp_path):
+    def m(d):
+        _quitar_var(d, "dm", "USUBJID")
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-001" and "DM no tiene la variable USUBJID" in h["mensaje"] for h in inf["hallazgos"])
+
+
+def test_adam_sin_studyid_se_dice(tmp_path):
+    def m(d):
+        _quitar_var(d, "adpp", "STUDYID")
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-002" and "STUDYID" in h["mensaje"] for h in inf["hallazgos"])
+
+
+def test_adam_sin_usubjid_se_dice(tmp_path):
+    def m(d):
+        _quitar_var(d, "adpp", "USUBJID")
+    inf = _inf(tmp_path, m)
+    assert any(h["regla"] == "COH-001" and "ADPP no tiene la variable USUBJID" in h["mensaje"] for h in inf["hallazgos"])
+
+
+def test_con_dos_estudios_el_que_no_se_puede_evaluar_se_declara_no_se_omite(tmp_path):
+    d = _base()
+    ficheros = {}
+    for k, v in d.items():                                    # estudio A completo
+        ficheros[F.BASE.replace("study-1", "A") + "%s.xpt" % k] = _bytes(*v)
+    for k in ("adnca", "adpp"):                               # estudio B: ADaM sin DM ni PC/PP
+        ficheros[F.BASE.replace("study-1", "B") + "%s.xpt" % k] = _bytes(*d[k])
+    inf = _con(tmp_path, ficheros)
+    assert {"COH-001", "COH-003", "COH-005"} <= set(inf["reglas_ejecutadas"])
+    avisos = [h for h in inf["hallazgos"] if h["regla"] == "COH-001" and h["severidad"] == "aviso"]
+    assert avisos and "/B" in avisos[0]["evidencia"] and "dm.xpt" in avisos[0]["mensaje"], inf["hallazgos"]
+    errores = [h for h in inf["hallazgos"] if h["regla"] in COH and h["severidad"] == "error"]
+    assert any("/B/" in h["evidencia"] and "pc.xpt" in h["mensaje"] for h in errores), errores   # B tiene registros PC y no pc.xpt
+
+
+def test_dos_ficheros_del_mismo_nombre_en_el_estudio_son_ambiguos(tmp_path):
+    d = _base()
+    ficheros2 = {_ruta(k, "fda"): _bytes(*v) for k, v in d.items()}
+    ficheros2[F.BASE + "tabulations/sdtm/dm.XPT"] = _bytes(*d["dm"])
+    inf = _con(tmp_path, ficheros2)
+    assert any(h["regla"] == "COH-001" and "ambiguo" in h["mensaje"] for h in inf["hallazgos"]), inf["hallazgos"]

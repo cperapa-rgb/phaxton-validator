@@ -7,3 +7,6 @@
 - `spec/ich-stf-specification-v2.6.1.pdf` is not redistributed here (see `ectd_validator/spec/PROCEDENCIA.md` for its source and hash).
 - Not contrasted against any agency validator. Single sequence, Module 5 only.
 - **Licence note (decided by the owner, 17-oct):** PyMuPDF (AGPL-3.0) stays as a dependency for the embedded-font check in PDF reports; it is declared in the README.
+- **SDTM/ADaM coherence (COH-001..005, v0.8.0)** crosses ADNCA/ADPP with DM, PC, EX and PP in the same study folder. It is NOT an ADaM
+  conformance check (no free engine ships ADaM rules). Limits: only ADNCA and ADPP; records with `SRCDOM=EX` are traced only if `ex.xpt`
+  is in the folder (otherwise COH-004 is declared not run); numeric comparison is `rel_tol=1e-9`; at most 20 findings per rule are shown.

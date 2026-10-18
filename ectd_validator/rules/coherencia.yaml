@@ -1,0 +1,40 @@
+- id: COH-001
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "CDISC SDTM/ADaM (cruce propio)"
+  checker: coherencia
+  params: {check: usubjid}
+  descripcion: Todo USUBJID de ADNCA y ADPP existe en DM de la misma carpeta de estudio. Se leen con el lector XPT propio del validador. Sin ADaM o sin el SDTM de origen en la carpeta, la regla no se ejecuta (se declara).
+- id: COH-002
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "CDISC SDTM/ADaM (cruce propio)"
+  checker: coherencia
+  params: {check: studyid}
+  descripcion: Un solo STUDYID en los datasets SDTM y ADaM de la misma carpeta de estudio. Se leen con el lector XPT propio del validador. Sin ADaM o sin el SDTM de origen en la carpeta, la regla no se ejecuta (se declara).
+- id: COH-003
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "CDISC SDTM/ADaM (cruce propio)"
+  checker: coherencia
+  params: {check: adnca_pc}
+  descripcion: Todo registro de ADNCA con SRCDOM=PC apunta por (USUBJID, SRCSEQ) a un registro de PC y su AVAL es el PCSTRESN de ese registro. Se leen con el lector XPT propio del validador. Sin ADaM o sin el SDTM de origen en la carpeta, la regla no se ejecuta (se declara).
+- id: COH-004
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "CDISC SDTM/ADaM (cruce propio)"
+  checker: coherencia
+  params: {check: adnca_ex}
+  descripcion: Todo registro de ADNCA con SRCDOM=EX apunta por (USUBJID, SRCSEQ) a un registro de EX y su AVAL es el EXDOSE de ese registro. Se leen con el lector XPT propio del validador. Sin ADaM o sin el SDTM de origen en la carpeta, la regla no se ejecuta (se declara).
+- id: COH-005
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "CDISC SDTM/ADaM (cruce propio)"
+  checker: coherencia
+  params: {check: adpp_pp}
+  descripcion: Todo registro de ADPP apunta por (USUBJID, SRCSEQ) a un registro de PP; su AVAL es el PPSTRESN y su PARAMCD el PPTESTCD de ese registro. Se leen con el lector XPT propio del validador. Sin ADaM o sin el SDTM de origen en la carpeta, la regla no se ejecuta (se declara).

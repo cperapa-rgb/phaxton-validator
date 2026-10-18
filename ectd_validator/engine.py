@@ -14,7 +14,7 @@ from .checkers import REGISTRO
 from .checkers.checksums import ArbitroError
 from .checkers.comun import NoAplicable
 
-VERSION = "0.7.0"
+VERSION = "0.8.0"
 SPEC = "ICH eCTD 3.2.2"
 XLINK_NS = ("http://www.w3.org/1999/xlink", "http://www.w3c.org/1999/xlink")
 RULES_DIR = Path(__file__).parent / "rules"
@@ -34,11 +34,12 @@ ALCANCE = {
                "estructura y nombres (ICH 3.2.2)", "referencias y ficheros huerfanos",
                "PDF: apertura, cifrado, version, fuentes embebidas, tamano", "index.xml: BOM, invisibles, codificacion",
                "study tagging files (STF v2.2): DTD oficial, file-tags de la tabla, referencias a hojas, cobertura de la carpeta del estudio",
-               "coherencia STF <-> ts.xpt (STUDYID/SPREFID), presencia de ts.xpt y SSTDTC (region us; lector XPT propio)"],
+               "coherencia STF <-> ts.xpt (STUDYID/SPREFID), presencia de ts.xpt y SSTDTC (region us; lector XPT propio)",
+               "coherencia SDTM <-> ADaM en la carpeta del estudio: USUBJID de ADNCA/ADPP en DM, un solo STUDYID, trazabilidad SRCDOM/SRCSEQ de ADNCA a PC y EX y de ADPP a PP (valor y PARAMCD); lector XPT propio"],
     "no_valida": ["contenido cientifico", "terminologia CDISC (CORE)", "Modulo 1 regional completo",
                   "ciclo de vida multi-secuencia (modified-file, replace/delete, STF append)",
                   "STF: valid-values.xml y hoja de estilos; CONTENIDO de ts.xpt (solo se valida STUDYID/SPREFID, presencia y SSTDTC)",
-                  "eCTD 4.0", "aceptacion por agencia"],
+                  "conformidad CDISC del ADaM (ningun motor libre trae reglas ADaM; solo se cruza con SDTM)", "eCTD 4.0", "aceptacion por agencia"],
 }
 
 

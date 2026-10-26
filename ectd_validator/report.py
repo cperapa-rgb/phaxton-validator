@@ -38,6 +38,8 @@ def a_html(informe: dict, reparacion: Optional[dict] = None) -> str:
     filas = "".join("<tr>" + "".join(f"<td>{e(c)}</td>" for c in f) + "</tr>" for f in _tabla_hallazgos(informe))
     no_ej = "".join(f"<li><b>{e(r['regla'])}</b>: {e(r['motivo'])}</li>" for r in informe["reglas_no_ejecutadas"])
     arb = "".join(f"<li>{e(k)}: {e(json.dumps(v, ensure_ascii=False))}</li>" for k, v in informe["arbitros"].items())
+    reg_no = "".join(f"<li><b>{e(x['region'].upper())}</b>: {e(x['motivo'])}</li>" for x in informe.get("regiones_no_evaluadas", []))
+    sev_fuente = e(informe.get("severidad_fuente", "(not recorded in this report)"))
     valida = "".join(f"<li>{e(x)}</li>" for x in informe["alcance"]["valida"])
     no_valida = "".join(f"<li>{e(x)}</li>" for x in informe["alcance"]["no_valida"])
     rep = ""
@@ -67,6 +69,8 @@ def a_html(informe: dict, reparacion: Optional[dict] = None) -> str:
         "<h2>Hallazgos</h2><table><tr><th>Regla</th><th>Codigo oficial</th><th>Severidad</th><th>Evidencia</th>"
         f"<th>Mensaje</th><th>Accion</th></tr>{filas}</table>"
         f"<h2>Reglas no ejecutadas</h2><ul>{no_ej or '<li>(ninguna)</li>'}</ul>"
+        f"<h2>Regiones no evaluadas</h2><ul>{reg_no or '<li>(ninguna)</li>'}</ul>"
+        f"<h2>Fuente de la severidad</h2><p>{sev_fuente}</p>"
         f"<h2>Arbitros</h2><ul>{arb or '<li>(sin arbitros usados)</li>'}</ul>"
         f"<h2>Alcance</h2><h3>Valida</h3><ul>{valida}</ul><h3>No valida</h3><ul>{no_valida}</ul>"
         f"{rep}<footer><p>{e(AVISO_PREPARATORIO)}</p></footer></body></html>"
@@ -166,6 +170,13 @@ def a_pdf(informe: dict, ruta, reparacion: Optional[dict] = None) -> Path:
         el.append(celdas([[r["regla"], r["motivo"]] for r in informe["reglas_no_ejecutadas"]], ["Regla", "Motivo"]))
     else:
         el.append(Paragraph("(ninguna)", st["BodyText"]))
+    el.append(Paragraph("Regiones no evaluadas", st["Heading3"]))
+    if informe.get("regiones_no_evaluadas"):
+        el.append(celdas([[x["region"].upper(), x["motivo"]] for x in informe["regiones_no_evaluadas"]], ["Region", "Motivo"]))
+    else:
+        el.append(Paragraph("(ninguna)", st["BodyText"]))
+    el.append(Paragraph("Fuente de la severidad", st["Heading3"]))
+    el.append(Paragraph(escape(informe.get("severidad_fuente", "(not recorded in this report)")), st["BodyText"]))
     el.append(Paragraph("Alcance", st["Heading3"]))
     el.append(Paragraph(escape("Valida: " + "; ".join(informe["alcance"]["valida"])), st["BodyText"]))
     el.append(Paragraph(escape("No valida: " + "; ".join(informe["alcance"]["no_valida"])), st["BodyText"]))

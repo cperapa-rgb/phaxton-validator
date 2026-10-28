@@ -302,6 +302,8 @@ def _ibm(raw: bytes) -> Optional[float]:
 
 
 def _stf_study_id(p: Path) -> Optional[str]:
+    if not p.is_file():
+        return None                                     # STF ausente: lo dice REF-001
     try:
         el = _parse(p).find(".//study-id")
     except etree.XMLSyntaxError:
@@ -328,6 +330,8 @@ def _ts_de(ctx, stf_path: Path) -> List[Tuple[dict, Path]]:
 
 
 def _tags_por_id(p: Path) -> Dict[str, str]:
+    if not p.is_file():
+        return {}                                       # STF ausente: lo dice REF-001
     try:
         arbol = _parse(p)
     except etree.XMLSyntaxError:
@@ -346,6 +350,8 @@ def _ts_stf_coherencia(ctx, rule):
     out = []
     n_ts = 0
     for _h, p in _requiere_stf(ctx):
+        if not p.is_file():
+            continue                                    # lo dice REF-001
         sid = _stf_study_id(p)
         for ht, pt in _ts_de(ctx, p):
             if not pt.is_file():

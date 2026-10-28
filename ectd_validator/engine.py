@@ -14,7 +14,7 @@ from .checkers import REGISTRO
 from .checkers.checksums import ArbitroError
 from .checkers.comun import NoAplicable
 
-VERSION = "0.8.0"
+VERSION = "0.8.1"
 SPEC = "ICH eCTD 3.2.2"
 XLINK_NS = ("http://www.w3.org/1999/xlink", "http://www.w3c.org/1999/xlink")
 RULES_DIR = Path(__file__).parent / "rules"

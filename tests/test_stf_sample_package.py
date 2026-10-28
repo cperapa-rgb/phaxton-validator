@@ -99,3 +99,12 @@ def test_el_cli_con_ruta_relativa_funciona_sobre_un_paquete_con_stf(pkg, monkeyp
     monkeypatch.chdir(pkg.parent)
     inf = validar_paquete(pkg.name, regiones=("us",))
     assert inf["estado"] in ("VALIDO", "VALIDO_CON_AVISOS")
+
+
+def test_stf_referenciado_y_ausente_no_hace_caer_al_validador_y_lo_dice_ref_001(pkg):
+    """Regresion (dogfooding en Linux, carpeta con mayusculas): si el STF que referencia el backbone no existe, _ts_stf_coherencia llamaba a etree.parse sobre
+    una ruta inexistente y el validador moria con OSError en vez de informar. Debe terminar con informe y REF-001."""
+    carpeta = _stf(pkg).parent
+    carpeta.rename(carpeta.parent / "x-carpeta-renombrada")
+    inf = validar_paquete(pkg, regiones=("us",))
+    assert inf["estado"] == "CON_ERRORES" and "REF-001" in _reglas(inf)

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phaxton-validator"
-version = "0.7.0"
+version = "0.8.1"
 description = "Technical validator for eCTD v3.2.2 packages (Module 5 focus): checks form, repairs only on a copy"
 readme = "README.md"
 requires-python = ">=3.10"

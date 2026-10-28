@@ -14,10 +14,15 @@ from .checkers import REGISTRO
 from .checkers.checksums import ArbitroError
 from .checkers.comun import NoAplicable
 
-VERSION = "0.7.0"
+VERSION = "0.8.1"
 SPEC = "ICH eCTD 3.2.2"
 XLINK_NS = ("http://www.w3.org/1999/xlink", "http://www.w3c.org/1999/xlink")
 RULES_DIR = Path(__file__).parent / "rules"
+# Severidad: la de la FDA, declarada como tal en cada informe (decision del dueno, 26-oct). NO es la severidad de la EMA.
+SEVERIDAD_FUENTE = ("FDA Specifications for eCTD Validation Criteria v4.6 (High -> error; Medium/Low -> warning). "
+                    "This is the FDA severity, applied as such; it is NOT the EMA severity.")
+# Regiones pedidas con --region que NO tienen reglas: se dicen, nunca pasan en silencio ni se tratan como otra region.
+REGION_NO_EVALUADA = {"eu": "EU: not evaluated (EMA v8.x criteria not implemented)"}
 
 AVISO_PREPARATORIO = (
     "This is a PREPARATORY tool for regulatory submissions. It checks and prepares materials BEFORE submission; "
@@ -34,11 +39,12 @@ ALCANCE = {
                "estructura y nombres (ICH 3.2.2)", "referencias y ficheros huerfanos",
                "PDF: apertura, cifrado, version, fuentes embebidas, tamano", "index.xml: BOM, invisibles, codificacion",
                "study tagging files (STF v2.2): DTD oficial, file-tags de la tabla, referencias a hojas, cobertura de la carpeta del estudio",
-               "coherencia STF <-> ts.xpt (STUDYID/SPREFID), presencia de ts.xpt y SSTDTC (region us; lector XPT propio)"],
+               "coherencia STF <-> ts.xpt (STUDYID/SPREFID), presencia de ts.xpt y SSTDTC (region us; lector XPT propio)",
+               "coherencia SDTM <-> ADaM en la carpeta del estudio: USUBJID de ADNCA/ADPP en DM, un solo STUDYID, trazabilidad SRCDOM/SRCSEQ de ADNCA a PC y EX y de ADPP a PP (valor y PARAMCD); lector XPT propio"],
     "no_valida": ["contenido cientifico", "terminologia CDISC (CORE)", "Modulo 1 regional completo",
                   "ciclo de vida multi-secuencia (modified-file, replace/delete, STF append)",
                   "STF: valid-values.xml y hoja de estilos; CONTENIDO de ts.xpt (solo se valida STUDYID/SPREFID, presencia y SSTDTC)",
-                  "eCTD 4.0", "aceptacion por agencia"],
+                  "conformidad CDISC del ADaM (ningun motor libre trae reglas ADaM; solo se cruza con SDTM)", "eCTD 4.0", "aceptacion por agencia"],
 }
 
 
@@ -106,8 +112,11 @@ def _leaves(tree) -> List[dict]:
 
 
 def validar_paquete(ruta, regiones=()) -> dict:
-    """`regiones`: reglas de region concreta (p. ej. "us") que SI se piden; sin pedirlas se declaran no ejecutadas."""
-    regiones = tuple(regiones)
+    """`regiones`: reglas de region concreta (p. ej. "us") que SI se piden; sin pedirlas se declaran no ejecutadas.
+
+    Una region pedida que no tiene reglas (hoy: todas salvo `us`; `eu` por no tener implementados los criterios EMA v8.x) NO se trata
+    como otra region: consta en `regiones_no_evaluadas` con su motivo y como aviso ECTD-CORE-005 (el estado nunca es VALIDO a secas)."""
+    regiones = tuple(str(r).strip().lower() for r in regiones)
     root = Path(ruta).resolve()   # una ruta relativa rompia el checker STF (relative_to) al invocar el CLI desde fuera
     reglas = cargar_reglas()
     informe = {
@@ -116,7 +125,15 @@ def validar_paquete(ruta, regiones=()) -> dict:
         "alcance": ALCANCE, "aviso": AVISO_PREPARATORIO,
         "reglas_cargadas": [r["id"] for r in reglas], "reglas_ejecutadas": [], "reglas_no_ejecutadas": [],
         "hallazgos": [], "arbitros": {}, "hojas_inspeccionadas": 0, "regiones_solicitadas": list(regiones),
+        "severidad_fuente": SEVERIDAD_FUENTE, "regiones_no_evaluadas": [],
     }
+    con_reglas = {r["region"] for r in reglas} - {"ich", "regional"}
+    for reg in regiones:
+        if reg not in con_reglas:
+            motivo = REGION_NO_EVALUADA.get(reg, "%s: not evaluated (no rules for this region)" % reg.upper())
+            informe["regiones_no_evaluadas"].append({"region": reg, "motivo": motivo})
+            informe["hallazgos"].append({"regla": "ECTD-CORE-005", "codigo_oficial": None, "severidad": "aviso",
+                                         "evidencia": "--region " + reg, "mensaje": motivo, "accion": "pendiente"})
 
     def no_validable(codigo: str, mensaje: str, evidencia: str, motivo: str) -> dict:
         informe["hallazgos"].append(_hallazgo_core(codigo, mensaje, evidencia))

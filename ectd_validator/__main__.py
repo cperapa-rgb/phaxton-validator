@@ -42,7 +42,7 @@ def main(argv=None) -> int:
     ap.add_argument("--informe-desde", help="no valida: escribe los informes (con --informe-dir) desde este JSON de validacion ya hecho")
     ap.add_argument("--json", help="escribe el informe JSON en esta ruta")
     ap.add_argument("--region", action="append", default=[],
-                    help="pide las reglas de una region concreta (p. ej. us); repetible. Sin pedirlas se declaran no ejecutadas")
+                    help="pide las reglas de una region concreta (hoy solo us tiene reglas); repetible. Sin pedirlas se declaran no ejecutadas. Una region sin reglas (p. ej. eu) NO devuelve lo mismo que us: se declara 'not evaluated' en la salida y en el informe")
     ap.add_argument("--reparar-en", help="repara una COPIA en esta carpeta (nueva o vacia); el original no se toca")
     a = ap.parse_args(argv)
     if a.version:
@@ -86,6 +86,8 @@ def main(argv=None) -> int:
     if no_pedidas:
         print("AVISO: reglas regionales NO solicitadas (no se ejecutaron): %s; use --region us para pedirlas"
               % ", ".join(no_pedidas), file=sys.stderr)
+    for x in informe.get("regiones_no_evaluadas", []):
+        print("AVISO: " + x["motivo"], file=sys.stderr)
     if a.informe_dir:
         from .report import escribir_informes
         escribir_informes(informe, a.informe_dir)

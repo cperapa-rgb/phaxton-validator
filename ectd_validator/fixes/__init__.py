@@ -45,6 +45,11 @@ MANUAL = {
     "STF-009": "Alinee el STUDYID de ts.xpt con el study-id del STF, o declare SPREFID en TS con el study-id del STF.",
     "STF-010": "Anada ts.xpt al estudio y etiquetelo data-tabulation-dataset en el STF.",
     "STF-011": "Declare la fecha de inicio del estudio (SSTDTC, ISO 8601) en ts.xpt.",
+    "COH-001": "Corrija el USUBJID del ADaM o anada el sujeto a DM: todo sujeto del ADaM debe existir en el SDTM del estudio.",
+    "COH-002": "Unifique el STUDYID de todos los datasets del estudio (SDTM y ADaM).",
+    "COH-003": "Regenere ADNCA desde PC: SRCSEQ debe ser el PCSEQ del registro de origen y AVAL su PCSTRESN.",
+    "COH-004": "Regenere ADNCA desde EX: SRCSEQ debe ser el EXSEQ del registro de origen y AVAL su EXDOSE.",
+    "COH-005": "Regenere ADPP desde PP: SRCSEQ debe ser el PPSEQ del registro de origen, AVAL su PPSTRESN y PARAMCD su PPTESTCD.",
 }
 # Reglas con arreglo automatico (cualquier otra regla DEBE estar en MANUAL: lo comprueba un test).
 AUTOMATICAS = {"CHK-001", "CHK-002", "CHK-003", "BBN-002", "BBN-003", "BBN-004", "BBN-005", "PDF-002", "PDF-003"}

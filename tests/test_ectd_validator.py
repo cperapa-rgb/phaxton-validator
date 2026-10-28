@@ -16,6 +16,7 @@ import ectd_fixtures as F
 REGLA = ("- {{id: {id}, codigo_oficial: null, severidad: {sev}, region: ich, spec_version: '3.2.2', "
          "checker: {checker}, params: {{check: {check}}}}}")
 NL = chr(10)
+COH = {f"COH-{i:03d}" for i in range(1, 6)}
 
 
 def _reglas(inf):
@@ -28,7 +29,7 @@ def test_paquete_limpio_es_valido_y_dice_que_corrio(tmp_path):
     assert inf["hojas_inspeccionadas"] == 2 and len(inf["reglas_ejecutadas"]) == 19
     # el paquete de juguete no trae STF: las 7 reglas STF-001..007 no tienen material y STF-008 es regional (us) y no se pidio:
     # las 8 NO se ejecutan y se declaran (nunca verde por ausencia)
-    stf = {f"STF-{i:03d}" for i in range(1, 12)}
+    stf = {f"STF-{i:03d}" for i in range(1, 12)} | {f"COH-{i:03d}" for i in range(1, 6)}
     assert set(inf["reglas_ejecutadas"]) == set(inf["reglas_cargadas"]) - stf
     assert {r["regla"] for r in inf["reglas_no_ejecutadas"]} == stf
 
@@ -73,7 +74,14 @@ def test_toda_regla_cargada_tiene_un_caso_roto():
     # STF-005, STF-006, STF-010 y STF-011 NO tienen caso roto en este repo (sus tests vivian en la suite de Phaxton, ligados a su
     # constructor de paquetes): deuda declarada en docs/KNOWN_GAPS.md, no cubierta
     sin_caso = {f"STF-{i:03d}" for i in (5, 6, 10, 11)}
+    # COH-001..005: casos rotos en tests/test_coherencia.py (necesitan XPT de ADaM y de SDTM, que el paquete de juguete no trae)
+    fuente_coh = (pathlib.Path(__file__).parent / "test_coherencia.py").read_text(encoding="utf-8")
+    for i in range(1, 6):
+        assert "def test_coh_00%d_" % i in fuente_coh, i
+        excepciones["COH-00%d" % i] = "test_coherencia.py::test_coh_00%d" % i
     for nombre in excepciones.values():
+        if "::" in nombre:
+            continue
         if nombre.endswith(".py"):
             fuente = (pathlib.Path(__file__).parent / pathlib.Path(nombre).name).read_text(encoding="utf-8")
             for regla, n in [(k, v) for k, v in excepciones.items() if v == nombre]:
@@ -316,10 +324,11 @@ def test_dtd_que_no_valida_sin_errores_legibles_nunca_es_verde(tmp_path, monkeyp
 
 def test_sin_pdfs_las_reglas_pdf_no_se_ejecutan_y_se_declara(tmp_path):
     inf = validar_paquete(F.roto(tmp_path / "0000", "SIN-PDF"))
-    ids = [r["regla"] for r in inf["reglas_no_ejecutadas"] if r["regla"].startswith("PDF")]   # STF-*: sin STF, aparte
+    pdf = [r for r in inf["reglas_no_ejecutadas"] if r["regla"].startswith("PDF")]   # STF-* y COH-*: sin su material, aparte
+    ids = [r["regla"] for r in pdf]
     assert ids == ["PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005"]
     assert not set(ids) & set(inf["reglas_ejecutadas"])
-    assert "ningun PDF" in inf["reglas_no_ejecutadas"][0]["motivo"]
+    assert "ningun PDF" in pdf[0]["motivo"]
 
 
 def test_pdf_005_el_tamano_se_detecta_con_el_umbral_de_la_regla(tmp_path):
@@ -348,7 +357,7 @@ def test_pdf_referenciado_pero_ausente_no_se_declara_como_sin_pdfs(tmp_path):
     inf = validar_paquete(F.roto(tmp_path / "0000", "PDF-REF-AUSENTE"))
     assert "REF-001" in _reglas(inf) and inf["estado"] == "CON_ERRORES"
     motivos = {r["regla"]: r["motivo"] for r in inf["reglas_no_ejecutadas"]}
-    assert set(motivos) - {f"STF-{i:03d}" for i in range(1, 12)} == {"PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005"}
+    assert set(motivos) - {f"STF-{i:03d}" for i in range(1, 12)} - COH == {"PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005"}
     assert all("ninguno accesible" in m for k, m in motivos.items() if k.startswith("PDF"))
 
 

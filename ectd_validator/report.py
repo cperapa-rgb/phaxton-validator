@@ -39,6 +39,9 @@ def a_html(informe: dict, reparacion: Optional[dict] = None) -> str:
     no_ej = "".join(f"<li><b>{e(r['regla'])}</b>: {e(r['motivo'])}</li>" for r in informe["reglas_no_ejecutadas"])
     arb = "".join(f"<li>{e(k)}: {e(json.dumps(v, ensure_ascii=False))}</li>" for k, v in informe["arbitros"].items())
     reg_no = "".join(f"<li><b>{e(x['region'].upper())}</b>: {e(x['motivo'])}</li>" for x in informe.get("regiones_no_evaluadas", []))
+    exentos = "".join(f"<li><b>{e(x['regla'])}</b> {e(x['evidencia'])}: {e(x['motivo'])}</li>" for x in informe.get("exentos", []))
+    ceu = informe.get("criterios_eu")
+    ceu_html = ("<li>%d of %d criteria evaluated (%s); %d not evaluated: %s</li>" % (len(ceu["evaluados"]), ceu["total"], e(", ".join(ceu["evaluados"]) or "none"), len(ceu["no_evaluados"]), e(", ".join(ceu["no_evaluados"])))) if ceu else ""
     sev_fuente = e(informe.get("severidad_fuente", "(not recorded in this report)"))
     valida = "".join(f"<li>{e(x)}</li>" for x in informe["alcance"]["valida"])
     no_valida = "".join(f"<li>{e(x)}</li>" for x in informe["alcance"]["no_valida"])
@@ -70,6 +73,8 @@ def a_html(informe: dict, reparacion: Optional[dict] = None) -> str:
         f"<th>Mensaje</th><th>Accion</th></tr>{filas}</table>"
         f"<h2>Reglas no ejecutadas</h2><ul>{no_ej or '<li>(ninguna)</li>'}</ul>"
         f"<h2>Regiones no evaluadas</h2><ul>{reg_no or '<li>(ninguna)</li>'}</ul>"
+        f"<h2>Criterios EU del perfil</h2><ul>{ceu_html or '<li>(no registrado)</li>'}</ul>"
+        f"<h2>PDF exentos</h2><ul>{exentos or '<li>(ninguno)</li>'}</ul>"
         f"<h2>Fuente de la severidad</h2><p>{sev_fuente}</p>"
         f"<h2>Arbitros</h2><ul>{arb or '<li>(sin arbitros usados)</li>'}</ul>"
         f"<h2>Alcance</h2><h3>Valida</h3><ul>{valida}</ul><h3>No valida</h3><ul>{no_valida}</ul>"
@@ -175,6 +180,14 @@ def a_pdf(informe: dict, ruta, reparacion: Optional[dict] = None) -> Path:
         el.append(celdas([[x["region"].upper(), x["motivo"]] for x in informe["regiones_no_evaluadas"]], ["Region", "Motivo"]))
     else:
         el.append(Paragraph("(ninguna)", st["BodyText"]))
+    ceu = informe.get("criterios_eu")
+    el.append(Paragraph("Criterios EU del perfil", st["Heading3"]))
+    el.append(Paragraph(escape("%d of %d criteria evaluated (%s); %d not evaluated: %s" % (len(ceu["evaluados"]), ceu["total"], ", ".join(ceu["evaluados"]) or "none", len(ceu["no_evaluados"]), ", ".join(ceu["no_evaluados"]))) if ceu else "(no registrado)", st["BodyText"]))
+    el.append(Paragraph("PDF exentos", st["Heading3"]))
+    if informe.get("exentos"):
+        el.append(celdas([[x["regla"], x["evidencia"], x["motivo"]] for x in informe["exentos"]], ["Regla", "Fichero", "Motivo"]))
+    else:
+        el.append(Paragraph("(ninguno)", st["BodyText"]))
     el.append(Paragraph("Fuente de la severidad", st["Heading3"]))
     el.append(Paragraph(escape(informe.get("severidad_fuente", "(not recorded in this report)")), st["BodyText"]))
     el.append(Paragraph("Alcance", st["Heading3"]))

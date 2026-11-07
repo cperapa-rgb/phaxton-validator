@@ -14,7 +14,7 @@ from .checkers import REGISTRO
 from .checkers.checksums import ArbitroError
 from .checkers.comun import NoAplicable
 
-VERSION = "0.8.1"
+VERSION = "0.8.2"
 SPEC = "ICH eCTD 3.2.2"
 XLINK_NS = ("http://www.w3.org/1999/xlink", "http://www.w3c.org/1999/xlink")
 RULES_DIR = Path(__file__).parent / "rules"
@@ -22,7 +22,7 @@ RULES_DIR = Path(__file__).parent / "rules"
 SEVERIDAD_FUENTE = ("FDA Specifications for eCTD Validation Criteria v4.6 (High -> error; Medium/Low -> warning). "
                     "This is the FDA severity, applied as such; it is NOT the EMA severity.")
 # Regiones pedidas con --region que NO tienen reglas: se dicen, nunca pasan en silencio ni se tratan como otra region.
-REGION_NO_EVALUADA = {"eu": "EU: not evaluated (EMA v8.x criteria not implemented)"}   # PDF-006 (EU 16.BP5, Fast Web View) es el unico criterio EU que se comprueba y corre en todo paquete; ver ALCANCE
+REGION_NO_EVALUADA = {"eu": "EU: not evaluated (EMA v8.x criteria not implemented)"}   # solo para una region EU sin ninguna regla EU ejecutada; con alguna regla EU ejecutada el motivo dice cuantos criterios se evaluaron (ver _criterios_eu)
 
 AVISO_PREPARATORIO = (
     "This is a PREPARATORY tool for regulatory submissions. It checks and prepares materials BEFORE submission; "
@@ -37,7 +37,7 @@ AVISO_PREPARATORIO = (
 ALCANCE = {
     "valida": ["checksums MD5 (hojas e index-md5.txt)", "index.xml contra la DTD oficial ICH 3.2",
                "estructura y nombres (ICH 3.2.2)", "referencias y ficheros huerfanos",
-               "PDF: apertura, cifrado, version, fuentes embebidas, tamano, Fast Web View (aviso, criterio EU 16.BP5)", "index.xml: BOM, invisibles, codificacion",
+               "PDF: apertura, cifrado, version, fuentes embebidas, tamano, Fast Web View (aviso: buena practica PDF, EU 16.BP5 / FDA PDF spec; PDF firmados exentos y declarados)", "index.xml: BOM, invisibles, codificacion",
                "study tagging files (STF v2.2): DTD oficial, file-tags de la tabla, referencias a hojas, cobertura de la carpeta del estudio",
                "coherencia STF <-> ts.xpt (STUDYID/SPREFID), presencia de ts.xpt y SSTDTC (region us; lector XPT propio)",
                "coherencia SDTM <-> ADaM en la carpeta del estudio: USUBJID de ADNCA/ADPP en DM, un solo STUDYID, trazabilidad SRCDOM/SRCSEQ de ADNCA a PC y EX y de ADPP a PP (valor y PARAMCD); lector XPT propio"],
@@ -48,6 +48,26 @@ ALCANCE = {
 }
 
 
+def _orden(x: str):
+    import re
+    return [int(p) if p.isdigit() else p for p in re.split(r"(\d+)", x)]
+
+
+def _criterios_eu(reglas, ejecutadas) -> dict:
+    """Cuantos criterios del perfil EU se evaluaron y cuantos no, con sus codigos. Evaluado = hay una regla con codigo_oficial 'EU <codigo>' que SE EJECUTO (no solo cargada).
+    La lista completa del perfil sale de spec/criterios_eu_82.json (codigos tal como los lista un informe del AGES eValidator 25.2; no verificada contra la EMA)."""
+    import json
+    spec = json.loads((Path(__file__).parent / "spec" / "criterios_eu_82.json").read_text(encoding="utf-8"))
+    todos = set(spec["criterios"])
+    cargados = {r["codigo_oficial"][3:] for r in reglas if (r.get("codigo_oficial") or "").startswith("EU ")}
+    desconocidos = cargados - todos
+    if desconocidos:
+        raise ValueError("regla con codigo EU que no esta en spec/criterios_eu_82.json: %s" % sorted(desconocidos))
+    evaluados = sorted({r["codigo_oficial"][3:] for r in reglas if r["id"] in ejecutadas and (r.get("codigo_oficial") or "").startswith("EU ")}, key=_orden)
+    no = sorted(todos - set(evaluados), key=_orden)
+    return {"perfil": spec["perfil"], "fuente_lista": spec["fuente"], "total": len(todos), "evaluados": evaluados, "no_evaluados": no}
+
+
 def carpetas() -> dict:
     """Tabla carpeta -> elemento DTD (spec 3.2.2). Funcion de frontera para quien genere backbones."""
     import json
@@ -55,7 +75,9 @@ def carpetas() -> dict:
 
 
 class Contexto:
-    def __init__(self, root: Path, index_path: Path, tree, leaves: List[dict]):
+    def __init__(self, root: Path, index_path: Path, tree, leaves: List[dict], regiones=()):
+        self.regiones = tuple(regiones)
+        self.exentos: List[dict] = []   # material que una regla NO inspecciona por una exencion declarada (p. ej. PDF firmado): consta en el informe, no es hallazgo
         self.root = root
         self.index_path = index_path
         self.tree = tree
@@ -125,17 +147,27 @@ def validar_paquete(ruta, regiones=()) -> dict:
         "alcance": ALCANCE, "aviso": AVISO_PREPARATORIO,
         "reglas_cargadas": [r["id"] for r in reglas], "reglas_ejecutadas": [], "reglas_no_ejecutadas": [],
         "hallazgos": [], "arbitros": {}, "hojas_inspeccionadas": 0, "regiones_solicitadas": list(regiones),
-        "severidad_fuente": SEVERIDAD_FUENTE, "regiones_no_evaluadas": [],
+        "severidad_fuente": SEVERIDAD_FUENTE, "regiones_no_evaluadas": [], "exentos": [],
     }
     con_reglas = {r["region"] for r in reglas} - {"ich", "regional"}
-    for reg in regiones:
-        if reg not in con_reglas:
+    sin_reglas = [reg for reg in regiones if reg not in con_reglas]
+
+    def declarar_regiones(eu):
+        """Una region pedida sin reglas se declara; la UE dice cuantos criterios evaluo y cuales no (D3: con una regla EU ejecutada no se puede decir solo «not evaluated»)."""
+        nuevos = []
+        for reg in sin_reglas:
             motivo = REGION_NO_EVALUADA.get(reg, "%s: not evaluated (no rules for this region)" % reg.upper())
+            if reg == "eu" and eu["evaluados"]:
+                motivo = ("EU: partially evaluated: %d of %d criteria of the %s profile evaluated (%s); %d not evaluated (EMA v8.x criteria not implemented): %s"
+                          % (len(eu["evaluados"]), eu["total"], eu["perfil"], ", ".join(eu["evaluados"]), len(eu["no_evaluados"]), ", ".join(eu["no_evaluados"])))
             informe["regiones_no_evaluadas"].append({"region": reg, "motivo": motivo})
-            informe["hallazgos"].append({"regla": "ECTD-CORE-005", "codigo_oficial": None, "severidad": "aviso",
-                                         "evidencia": "--region " + reg, "mensaje": motivo, "accion": "pendiente"})
+            nuevos.append({"regla": "ECTD-CORE-005", "codigo_oficial": None, "severidad": "aviso",
+                           "evidencia": "--region " + reg, "mensaje": motivo, "accion": "pendiente"})
+        informe["hallazgos"][0:0] = nuevos      # al principio, como antes de D3
 
     def no_validable(codigo: str, mensaje: str, evidencia: str, motivo: str) -> dict:
+        informe["criterios_eu"] = _criterios_eu(reglas, ())
+        declarar_regiones(informe["criterios_eu"])
         informe["hallazgos"].append(_hallazgo_core(codigo, mensaje, evidencia))
         informe["reglas_no_ejecutadas"] = [{"regla": r["id"], "motivo": motivo} for r in reglas]
         informe["estado"] = "NO_VALIDABLE"
@@ -166,7 +198,7 @@ def validar_paquete(ruta, regiones=()) -> dict:
                             "el backbone no tiene ninguna hoja (leaf): no hay material que verificar",
                             "index.xml", "backbone sin hojas")
 
-    ctx = Contexto(root, index, tree, leaves)
+    ctx = Contexto(root, index, tree, leaves, regiones)
     for r in reglas:
         if r["region"] not in ("ich", "regional") and r["region"] not in regiones:
             informe["reglas_no_ejecutadas"].append(
@@ -183,6 +215,9 @@ def validar_paquete(ruta, regiones=()) -> dict:
             continue
         informe["reglas_ejecutadas"].append(r["id"])
     informe["arbitros"] = ctx.arbitros
+    informe["exentos"] = ctx.exentos
+    informe["criterios_eu"] = _criterios_eu(reglas, set(informe["reglas_ejecutadas"]))
+    declarar_regiones(informe["criterios_eu"])
     informe["hojas_inspeccionadas"] = len(leaves)
     hay_error = any(h["severidad"] == "error" for h in informe["hallazgos"])
     if any(h["regla"] == "ECTD-CORE-004" for h in informe["hallazgos"]):

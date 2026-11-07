@@ -217,6 +217,7 @@ def test_pdf_arreglo_que_no_cumple_la_postcondicion_se_descarta(tmp_path, monkey
     class Falso:
         pdf_version, is_encrypted = "1.3", True
         Root = {}
+        objects = []
 
         def __enter__(self):
             return self

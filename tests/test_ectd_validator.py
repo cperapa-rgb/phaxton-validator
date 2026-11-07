@@ -505,3 +505,45 @@ def test_el_informe_pdf_del_validador_sale_linealizado_para_el_paquete(tmp_path)
     rutas = escribir_informes(inf, tmp_path / "inf")
     with pikepdf.open(str(rutas["pdf"])) as x:
         assert x.is_linearized
+
+
+@pytest.mark.parametrize("variante", ["completa", "byterange", "tipo_sig"])
+def test_pdf_006_un_pdf_firmado_es_exento_y_consta_en_el_informe_no_como_hallazgo(tmp_path, variante):
+    """D5: un PDF con /Sig o /ByteRange no se linealiza ni se marca: consta como «firmado, exento» en ctx.exentos."""
+    from ectd_validator.checkers import pdf
+    from ectd_validator.engine import Contexto
+    regla = [r for r in cargar_reglas() if r["id"] == "PDF-006"][0]
+    f, sin = tmp_path / "firmado.pdf", tmp_path / "sin.pdf"
+    f.write_bytes(F.pdf_bytes(lineal=False))
+    F.firmar_sintetico(f, variante)
+    sin.write_bytes(F.pdf_bytes(lineal=False))
+    ctx = Contexto(tmp_path, tmp_path / "index.xml", None, [])
+    hall = pdf._fwv(ctx, regla, [("m5/53/firmado.pdf", f), ("m5/53/sin.pdf", sin)])
+    assert [h["evidencia"] for h in hall] == ["m5/53/sin.pdf"]
+    assert ctx.exentos == [{"regla": "PDF-006", "evidencia": "m5/53/firmado.pdf", "motivo": "firmado, exento (se reescribiria la firma)"}]
+
+
+def test_pdf_006_la_palabra_byterange_en_el_texto_no_exime_a_un_pdf_sin_firma(tmp_path):
+    """El exento sale de la estructura, no de buscar la palabra: un comentario con /ByteRange y /Sig no libra a un PDF sin linealizar."""
+    from ectd_validator.checkers import pdf
+    from ectd_validator.engine import Contexto
+    regla = [r for r in cargar_reglas() if r["id"] == "PDF-006"][0]
+    p = tmp_path / "x.pdf"
+    p.write_bytes(F.pdf_bytes(lineal=False))
+    F.con_texto_de_firma_sin_firma(p)
+    ctx = Contexto(tmp_path, tmp_path / "index.xml", None, [])
+    hall = pdf._fwv(ctx, regla, [("m5/53/x.pdf", p)])
+    assert [h["evidencia"] for h in hall] == ["m5/53/x.pdf"] and ctx.exentos == []
+
+
+def test_el_informe_lista_los_pdf_firmados_exentos_y_la_reparacion_no_los_reescribe(tmp_path):
+    from ectd_validator.fixes import pdf as fpdf
+    from ectd_validator.fixes import FixError
+    f = tmp_path / "copia" / "a.pdf"
+    f.parent.mkdir()
+    f.write_bytes(F.pdf_bytes(lineal=False))
+    F.firmar_sintetico(f, "byterange")
+    antes = f.read_bytes()
+    with pytest.raises(FixError, match="firmado digitalmente"):
+        fpdf.reparar(tmp_path / "copia", [{"regla": "PDF-003", "evidencia": "a.pdf"}], [])
+    assert f.read_bytes() == antes

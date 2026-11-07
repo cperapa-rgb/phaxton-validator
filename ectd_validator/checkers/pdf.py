@@ -176,11 +176,17 @@ def _qpdf_linealizado(p) -> bool:
         return False
 
 
+ETIQUETA_FWV_SIN_REGION = "buena practica PDF (EU 16.BP5 / FDA PDF spec)"
+
+
 def _fwv(ctx, rule, pdfs):
     """Fast Web View = PDF linealizado. Dos comprobaciones que tienen que coincidir: la marca /Linearized dentro de los primeros 1024 bytes (lectura directa del fichero) y pikepdf
     (qpdf) diciendo que sigue linealizado: la marca sola da falso verde con un PDF al que se anadio una actualizacion incremental (conserva la marca y deja de estar linealizado)
-    o con la palabra en un comentario de cabecera. Los PDF de las carpetas de las secciones 1.0 y 1.2 (params.exentas) quedan fuera, como en el criterio EU."""
+    o con la palabra en un comentario de cabecera. Los PDF de las carpetas de las secciones 1.0 y 1.2 (params.exentas) quedan fuera, como en el criterio EU.
+    Un PDF FIRMADO digitalmente queda exento (no se puede linealizar sin romper la firma) y consta en ctx.exentos, no como hallazgo. Corre con o sin region: la etiqueta cambia
+    (con --region eu cita EU 16.BP5; sin region, la buena practica PDF EU 16.BP5 / FDA PDF spec)."""
     out = []
+    codigo = rule.get("codigo_oficial") if "eu" in getattr(ctx, "regiones", ()) else ETIQUETA_FWV_SIN_REGION
     for href, p, r in _lectores(pdfs):
         if r.is_encrypted:                                  # no se puede inspeccionar: lo dice PDF-002; un PDF ilegible lo dice PDF-001 (no sale de _lectores)
             continue
@@ -190,8 +196,22 @@ def _fwv(ctx, rule, pdfs):
         with open(p, "rb") as f:
             cabecera = f.read(1024)
         if cabecera and (b"/Linearized" not in cabecera or not _qpdf_linealizado(p)):
-            out.append(hallazgo(rule, href, "el PDF no esta linealizado (Fast Web View inactivo)"))
+            if _firmado(p):
+                ctx.exentos.append({"regla": rule["id"], "evidencia": href, "motivo": "firmado, exento (se reescribiria la firma)"})
+                continue
+            h = hallazgo(rule, href, "el PDF no esta linealizado (Fast Web View inactivo)")
+            h["codigo_oficial"] = codigo
+            out.append(h)
     return out
+
+
+def _firmado(p) -> bool:
+    import pikepdf
+    from ..pdf_firma import firmado_en_ruta
+    try:
+        return firmado_en_ruta(p)
+    except pikepdf.PdfError:            # pypdf lo abrio y qpdf no: no se puede afirmar que este firmado, se queda como hallazgo
+        return False
 
 
 _CHECKS = {"abre": _abre, "cifrado": _cifrado, "version": _version, "fuentes": _fuentes, "tamano": _tamano, "fwv": _fwv}

@@ -12,6 +12,7 @@ from pathlib import Path
 import pikepdf
 
 from . import FixError
+from ..pdf_firma import esta_firmado
 
 MIN_VERSION = "1.4"
 
@@ -21,11 +22,7 @@ def _v(s: str):
 
 
 def _firmado(pdf) -> bool:
-    try:
-        form = pdf.Root.get("/AcroForm")
-        return form is not None and int(form.get("/SigFlags", 0)) != 0
-    except (pikepdf.PdfError, TypeError, ValueError):
-        return False
+    return esta_firmado(pdf)
 
 
 def reparar(copia: Path, hallazgos, log) -> None:

@@ -189,6 +189,9 @@ def a_pdf(informe: dict, ruta, reparacion: Optional[dict] = None) -> Path:
         for n in reparacion["no_reparados"]:
             el.append(Paragraph(escape(f"Pendiente {n['regla']} {n['evidencia']}: {n['instruccion']}"), st["BodyText"]))
     doc.build(el, onFirstPage=pie, onLaterPages=pie)
+    import pikepdf
+    with pikepdf.open(str(ruta), allow_overwriting_input=True) as pdf:     # el informe viaja en el paquete: tambien con Fast Web View
+        pdf.save(str(ruta), linearize=True)
     comprobar_fuentes_embebidas(ruta)
     return ruta
 

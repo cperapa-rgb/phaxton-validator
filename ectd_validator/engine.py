@@ -22,7 +22,7 @@ RULES_DIR = Path(__file__).parent / "rules"
 SEVERIDAD_FUENTE = ("FDA Specifications for eCTD Validation Criteria v4.6 (High -> error; Medium/Low -> warning). "
                     "This is the FDA severity, applied as such; it is NOT the EMA severity.")
 # Regiones pedidas con --region que NO tienen reglas: se dicen, nunca pasan en silencio ni se tratan como otra region.
-REGION_NO_EVALUADA = {"eu": "EU: not evaluated (EMA v8.x criteria not implemented)"}
+REGION_NO_EVALUADA = {"eu": "EU: not evaluated (EMA v8.x criteria not implemented)"}   # PDF-006 (EU 16.BP5, Fast Web View) es el unico criterio EU que se comprueba y corre en todo paquete; ver ALCANCE
 
 AVISO_PREPARATORIO = (
     "This is a PREPARATORY tool for regulatory submissions. It checks and prepares materials BEFORE submission; "
@@ -37,7 +37,7 @@ AVISO_PREPARATORIO = (
 ALCANCE = {
     "valida": ["checksums MD5 (hojas e index-md5.txt)", "index.xml contra la DTD oficial ICH 3.2",
                "estructura y nombres (ICH 3.2.2)", "referencias y ficheros huerfanos",
-               "PDF: apertura, cifrado, version, fuentes embebidas, tamano", "index.xml: BOM, invisibles, codificacion",
+               "PDF: apertura, cifrado, version, fuentes embebidas, tamano, Fast Web View (aviso, criterio EU 16.BP5)", "index.xml: BOM, invisibles, codificacion",
                "study tagging files (STF v2.2): DTD oficial, file-tags de la tabla, referencias a hojas, cobertura de la carpeta del estudio",
                "coherencia STF <-> ts.xpt (STUDYID/SPREFID), presencia de ts.xpt y SSTDTC (region us; lector XPT propio)",
                "coherencia SDTM <-> ADaM en la carpeta del estudio: USUBJID de ADNCA/ADPP en DM, un solo STUDYID, trazabilidad SRCDOM/SRCSEQ de ADNCA a PC y EX y de ADPP a PP (valor y PARAMCD); lector XPT propio"],

@@ -136,7 +136,9 @@ def _reescribir_index(d: Path, f):
 def roto(destino: Path, defecto: str) -> Path:
     d = construir(destino)
     if defecto == "CHK-001":      # el fichero cambia despues de calcular el MD5
-        (d / PDF).write_bytes((d / PDF).read_bytes() + NL.encode() + b"% alterado" + NL.encode())
+        datos = (d / PDF).read_bytes()
+        assert b"612" in datos
+        (d / PDF).write_bytes(datos.replace(b"612", b"613", 1))     # misma longitud: no toca la linealizacion, solo cambia el contenido
     elif defecto == "CHK-002":    # una hoja sin checksum
         quitar = ' checksum="%s" checksum-type="md5"' % _md5(FICHEROS[XPT])
         _reescribir_index(d, lambda s: s.replace(quitar, "", 1))

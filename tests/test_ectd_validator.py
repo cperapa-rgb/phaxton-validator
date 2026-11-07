@@ -452,3 +452,56 @@ def test_pdf_006_fast_web_view_exime_1_0_y_1_2_y_no_inspecciona_lo_que_no_se_pue
     hall = pdf._fwv(ctx, regla, hojas)
     assert sorted(h["evidencia"] for h in hall) == ["m1/eu/13-other/e.pdf", "m5/53/a.pdf"]            # solo los no exentos, legibles y sin linealizar
     assert all(h["regla"] == "PDF-006" and h["severidad"] == "aviso" for h in hall)
+
+
+def _lineal_con_actualizacion_incremental(destino):
+    """PDF linealizado al que se anade una actualizacion incremental: conserva la marca /Linearized y deja de estar linealizado (lo ve qpdf y Acrobat)."""
+    from io import BytesIO
+    from pypdf import PdfWriter
+    destino.write_bytes(F.pdf_bytes(lineal=True))
+    w = PdfWriter(str(destino), incremental=True)
+    w.add_metadata({"/Title": "actualizado"})
+    w.write(str(destino))
+
+
+def test_pdf_006_no_se_deja_enganar_por_la_marca_sola(tmp_path):
+    """La marca /Linearized en los primeros bytes no basta: una actualizacion incremental y un comentario de cabecera la conservan sin que el PDF este linealizado."""
+    import pikepdf
+    from ectd_validator.checkers import pdf
+    from ectd_validator.engine import Contexto
+    regla = [r for r in cargar_reglas() if r["id"] == "PDF-006"][0]
+    incr, falso, bueno = tmp_path / "incr.pdf", tmp_path / "falso.pdf", tmp_path / "bueno.pdf"
+    _lineal_con_actualizacion_incremental(incr)
+    sin = F.pdf_bytes(lineal=False)
+    falso.write_bytes(b"%PDF-1.4" + b"\n% /Linearized\n" + sin.split(b"\n", 1)[1])
+    bueno.write_bytes(F.pdf_bytes(lineal=True))
+    assert b"/Linearized" in incr.read_bytes()[:1024] and b"/Linearized" in falso.read_bytes()[:1024]            # la marca esta en los dos
+    for p in (incr, falso):
+        with pikepdf.open(str(p)) as x:
+            assert not x.is_linearized, p                                                                           # y ninguno esta linealizado
+    ctx = Contexto(tmp_path, tmp_path / "index.xml", None, [])
+    hall = pdf._fwv(ctx, regla, [("m5/a/incr.pdf", incr), ("m5/a/falso.pdf", falso), ("m5/a/bueno.pdf", bueno)])
+    assert sorted(h["evidencia"] for h in hall) == ["m5/a/falso.pdf", "m5/a/incr.pdf"]
+
+
+def test_la_reparacion_de_pdf_sale_linealizada_aunque_el_original_no_lo_estuviera(tmp_path):
+    import pikepdf
+    orig = F.roto(tmp_path / "orig", "PDF-002-PERMISOS")                                  # cifrado de permisos, sin linealizar
+    with pikepdf.open(str(orig / F.PDF)) as x:
+        assert not x.is_linearized
+    from ectd_validator.fixes import reparar
+    copia = tmp_path / "copia"
+    reparar(orig, copia)
+    with pikepdf.open(str(copia / F.PDF)) as x:
+        assert x.is_linearized and not x.is_encrypted
+    assert validar_paquete(copia)["hallazgos"] == []
+
+
+def test_el_informe_pdf_del_validador_sale_linealizado_para_el_paquete(tmp_path):
+    import pikepdf
+    d = F.construir(tmp_path / "0000")
+    inf = validar_paquete(d)
+    from ectd_validator.report import escribir_informes
+    rutas = escribir_informes(inf, tmp_path / "inf")
+    with pikepdf.open(str(rutas["pdf"])) as x:
+        assert x.is_linearized

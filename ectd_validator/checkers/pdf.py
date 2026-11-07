@@ -167,5 +167,22 @@ def _tamano(ctx, rule, pdfs):
     return out
 
 
-_CHECKS = {"abre": _abre, "cifrado": _cifrado, "version": _version, "fuentes": _fuentes, "tamano": _tamano}
+def _fwv(ctx, rule, pdfs):
+    """Fast Web View = PDF linealizado: la marca /Linearized va en el primer objeto, dentro de los primeros bytes. Se lee el fichero, no se confia en el lector.
+    Los PDF de las carpetas de las secciones 1.0 y 1.2 (params.exentas) quedan fuera, como en el criterio EU."""
+    out = []
+    for href, p, r in _lectores(pdfs):
+        if r.is_encrypted:                                  # no se puede inspeccionar: lo dice PDF-002; un PDF ilegible lo dice PDF-001 (no sale de _lectores)
+            continue
+        partes = [x.lower() for x in href.replace(chr(92), "/").split("/")]
+        if "m1" in partes and any(x in partes for x in rule["params"]["exentas"]):
+            continue
+        with open(p, "rb") as f:
+            cabecera = f.read(1024)
+        if cabecera and b"/Linearized" not in cabecera:
+            out.append(hallazgo(rule, href, "el PDF no esta linealizado (Fast Web View inactivo)"))
+    return out
+
+
+_CHECKS = {"abre": _abre, "cifrado": _cifrado, "version": _version, "fuentes": _fuentes, "tamano": _tamano, "fwv": _fwv}
 CHECKS = _CHECKS

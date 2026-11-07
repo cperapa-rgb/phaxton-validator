@@ -50,7 +50,7 @@ def reparar(copia: Path, hallazgos, log) -> None:
                         continue
                     if _v(antes_v) >= _v(MIN_VERSION):
                         continue
-                pdf.save(str(tmp), encryption=False, min_version=MIN_VERSION)
+                pdf.save(str(tmp), encryption=False, min_version=MIN_VERSION, linearize=True)   # el fichero se reescribe entero de todos modos: sale con Fast Web View (PDF-006)
             with pikepdf.open(str(tmp)) as chk:  # postcondicion comprobada, no solo registrada
                 despues_v, despues_c = chk.pdf_version, chk.is_encrypted
             if despues_c or _v(despues_v) < _v(MIN_VERSION):

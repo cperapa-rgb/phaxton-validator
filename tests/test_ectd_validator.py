@@ -26,7 +26,7 @@ def _reglas(inf):
 def test_paquete_limpio_es_valido_y_dice_que_corrio(tmp_path):
     inf = validar_paquete(F.construir(tmp_path / "0000"))
     assert inf["estado"] == "VALIDO" and inf["hallazgos"] == []
-    assert inf["hojas_inspeccionadas"] == 2 and len(inf["reglas_ejecutadas"]) == 19
+    assert inf["hojas_inspeccionadas"] == 2 and len(inf["reglas_ejecutadas"]) == 20
     # el paquete de juguete no trae STF: las 7 reglas STF-001..007 no tienen material y STF-008 es regional (us) y no se pidio:
     # las 8 NO se ejecutan y se declaran (nunca verde por ausencia)
     stf = {f"STF-{i:03d}" for i in range(1, 12)} | {f"COH-{i:03d}" for i in range(1, 6)}
@@ -46,6 +46,7 @@ CASOS = [("CHK-001", {"CHK-001"}, "CON_ERRORES"), ("CHK-002", {"CHK-002", "BBN-0
          ("PDF-001", {"PDF-001"}, "CON_ERRORES"), ("PDF-001-VACIO", {"PDF-001", "PDF-005"}, "CON_ERRORES"),
          ("PDF-002", {"PDF-002"}, "CON_ERRORES"), ("PDF-003", {"PDF-003"}, "VALIDO_CON_AVISOS"),
          ("PDF-004", {"PDF-004"}, "VALIDO_CON_AVISOS"), ("PDF-004-LIMPIO", set(), "VALIDO"),
+         ("PDF-006", {"PDF-006"}, "VALIDO_CON_AVISOS"),
          ("BBN-005-BOM", {"BBN-005"}, "VALIDO_CON_AVISOS"), ("BBN-005-INVISIBLE", {"BBN-005"}, "VALIDO_CON_AVISOS"),
          ("BBN-005-LATIN1", {"BBN-005"}, "VALIDO_CON_AVISOS"), ("BBN-005-ZWJ", {"BBN-005"}, "VALIDO_CON_AVISOS"),
          ("PDF-004-M-FORM", {"PDF-004"}, "VALIDO_CON_AVISOS"), ("PDF-004-M-TYPE0", {"PDF-004"}, "VALIDO_CON_AVISOS"),
@@ -326,7 +327,7 @@ def test_sin_pdfs_las_reglas_pdf_no_se_ejecutan_y_se_declara(tmp_path):
     inf = validar_paquete(F.roto(tmp_path / "0000", "SIN-PDF"))
     pdf = [r for r in inf["reglas_no_ejecutadas"] if r["regla"].startswith("PDF")]   # STF-* y COH-*: sin su material, aparte
     ids = [r["regla"] for r in pdf]
-    assert ids == ["PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005"]
+    assert ids == ["PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005", "PDF-006"]
     assert not set(ids) & set(inf["reglas_ejecutadas"])
     assert "ningun PDF" in pdf[0]["motivo"]
 
@@ -350,14 +351,14 @@ def test_pdf_005_el_tamano_se_detecta_con_el_umbral_de_la_regla(tmp_path):
 
 def test_las_reglas_regionales_estan_marcadas_y_son_avisos():
     reg = {r["id"]: r for r in cargar_reglas() if r["region"] == "regional"}
-    assert set(reg) == {"PDF-003", "PDF-005"} and all(r["severidad"] == "aviso" for r in reg.values())
+    assert set(reg) == {"PDF-003", "PDF-005", "PDF-006"} and all(r["severidad"] == "aviso" for r in reg.values())
 
 
 def test_pdf_referenciado_pero_ausente_no_se_declara_como_sin_pdfs(tmp_path):
     inf = validar_paquete(F.roto(tmp_path / "0000", "PDF-REF-AUSENTE"))
     assert "REF-001" in _reglas(inf) and inf["estado"] == "CON_ERRORES"
     motivos = {r["regla"]: r["motivo"] for r in inf["reglas_no_ejecutadas"]}
-    assert set(motivos) - {f"STF-{i:03d}" for i in range(1, 12)} - COH == {"PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005"}
+    assert set(motivos) - {f"STF-{i:03d}" for i in range(1, 12)} - COH == {"PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005", "PDF-006"}
     assert all("ninguno accesible" in m for k, m in motivos.items() if k.startswith("PDF"))
 
 
@@ -433,3 +434,21 @@ def test_una_ruta_relativa_valida_igual_que_la_absoluta(tmp_path, monkeypatch):
     ab = validar_paquete(d)
     assert rel["estado"] == ab["estado"] and rel["hojas_inspeccionadas"] == ab["hojas_inspeccionadas"]
     assert [h["regla"] for h in rel["hallazgos"]] == [h["regla"] for h in ab["hallazgos"]]
+
+
+def test_pdf_006_fast_web_view_exime_1_0_y_1_2_y_no_inspecciona_lo_que_no_se_puede_abrir(tmp_path):
+    """PDF-006 (EU 16.BP5, aviso): un PDF sin linealizar se senala, salvo en las carpetas 10-cover y 12-form del Modulo 1; uno cifrado o ilegible lo dicen PDF-002 y PDF-001."""
+    from ectd_validator.checkers import pdf
+    from ectd_validator.engine import Contexto
+    regla = [r for r in cargar_reglas() if r["id"] == "PDF-006"][0]
+    assert regla["codigo_oficial"] == "EU 16.BP5" and regla["severidad"] == "aviso" and regla["region"] == "regional"
+    sin, con, cif, roto = tmp_path / "sin.pdf", tmp_path / "con.pdf", tmp_path / "cif.pdf", tmp_path / "roto.pdf"
+    sin.write_bytes(F.pdf_bytes(lineal=False))
+    con.write_bytes(F.pdf_bytes(lineal=True))
+    cif.write_bytes(F.pdf_bytes(cifrar=True))
+    roto.write_bytes(b"%PDF-1.4" + b"\n" + b"esto no es un pdf")
+    ctx = Contexto(tmp_path, tmp_path / "index.xml", None, [])
+    hojas = [("m5/53/a.pdf", sin), ("m5/53/b.pdf", con), ("m1/eu/10-cover/c.pdf", sin), ("m1/eu/12-form/d.pdf", sin), ("m1/eu/13-other/e.pdf", sin), ("m5/53/f.pdf", cif), ("m5/53/g.pdf", roto)]
+    hall = pdf._fwv(ctx, regla, hojas)
+    assert sorted(h["evidencia"] for h in hall) == ["m1/eu/13-other/e.pdf", "m5/53/a.pdf"]            # solo los no exentos, legibles y sin linealizar
+    assert all(h["regla"] == "PDF-006" and h["severidad"] == "aviso" for h in hall)

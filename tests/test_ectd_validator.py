@@ -26,7 +26,7 @@ def _reglas(inf):
 def test_paquete_limpio_es_valido_y_dice_que_corrio(tmp_path):
     inf = validar_paquete(F.construir(tmp_path / "0000"))
     assert inf["estado"] == "VALIDO" and inf["hallazgos"] == []
-    assert inf["hojas_inspeccionadas"] == 2 and len(inf["reglas_ejecutadas"]) == 20
+    assert inf["hojas_inspeccionadas"] == 2 and len(inf["reglas_ejecutadas"]) == 21
     # el paquete de juguete no trae STF: las 7 reglas STF-001..007 no tienen material y STF-008 es regional (us) y no se pidio:
     # las 8 NO se ejecutan y se declaran (nunca verde por ausencia)
     stf = {f"STF-{i:03d}" for i in range(1, 12)} | {f"COH-{i:03d}" for i in range(1, 6)}
@@ -45,14 +45,14 @@ CASOS = [("CHK-001", {"CHK-001"}, "CON_ERRORES"), ("CHK-002", {"CHK-002", "BBN-0
          ("STR-001-VALIDO-64", set(), "VALIDO"),  # el borde: 64 caracteres es valido, 65 no
          ("PDF-001", {"PDF-001"}, "CON_ERRORES"), ("PDF-001-VACIO", {"PDF-001", "PDF-005"}, "CON_ERRORES"),
          ("PDF-002", {"PDF-002"}, "CON_ERRORES"), ("PDF-003", {"PDF-003"}, "VALIDO_CON_AVISOS"),
-         ("PDF-004", {"PDF-004"}, "VALIDO_CON_AVISOS"), ("PDF-004-LIMPIO", set(), "VALIDO"),
-         ("PDF-006", {"PDF-006"}, "VALIDO_CON_AVISOS"),
+         ("PDF-004", {"PDF-004", "PDF-007"}, "VALIDO_CON_AVISOS"), ("PDF-004-LIMPIO", {"PDF-007"}, "VALIDO_CON_AVISOS"),   # PDF-004 calla lo exento por la spec ICH (TNR, Courier, Arial); PDF-007 no
+         ("PDF-006", {"PDF-006"}, "VALIDO_CON_AVISOS"), ("PDF-007", {"PDF-007"}, "VALIDO_CON_AVISOS"), ("PDF-007-LIMPIO", set(), "VALIDO"),
          ("BBN-005-BOM", {"BBN-005"}, "VALIDO_CON_AVISOS"), ("BBN-005-INVISIBLE", {"BBN-005"}, "VALIDO_CON_AVISOS"),
          ("BBN-005-LATIN1", {"BBN-005"}, "VALIDO_CON_AVISOS"), ("BBN-005-ZWJ", {"BBN-005"}, "VALIDO_CON_AVISOS"),
-         ("PDF-004-M-FORM", {"PDF-004"}, "VALIDO_CON_AVISOS"), ("PDF-004-M-TYPE0", {"PDF-004"}, "VALIDO_CON_AVISOS"),
-         ("PDF-004-M-HEREDADO", {"PDF-004"}, "VALIDO_CON_AVISOS"), ("PDF-004-M-TYPE3", set(), "VALIDO"),
+         ("PDF-004-M-FORM", {"PDF-004", "PDF-007"}, "VALIDO_CON_AVISOS"), ("PDF-004-M-TYPE0", {"PDF-004", "PDF-007"}, "VALIDO_CON_AVISOS"),
+         ("PDF-004-M-HEREDADO", {"PDF-004", "PDF-007"}, "VALIDO_CON_AVISOS"), ("PDF-004-M-TYPE3", set(), "VALIDO"),
          ("PDF-004-M-FORM-OK", set(), "VALIDO"), ("PDF-004-M-TYPE0-OK", set(), "VALIDO"),
-         ("PDF-004-M-MALFORMADO", {"PDF-004"}, "CON_ERRORES"),   # no inspeccionable: error, no verde ni excepcion
+         ("PDF-004-M-MALFORMADO", {"PDF-004", "PDF-007"}, "CON_ERRORES"),   # no inspeccionable: error, no verde ni excepcion
          ("PDF-VERSION-CATALOGO", {"PDF-003"}, "VALIDO_CON_AVISOS"),
          ("STR-003", {"STR-003", "REF-002"}, "CON_ERRORES")]
 
@@ -327,7 +327,7 @@ def test_sin_pdfs_las_reglas_pdf_no_se_ejecutan_y_se_declara(tmp_path):
     inf = validar_paquete(F.roto(tmp_path / "0000", "SIN-PDF"))
     pdf = [r for r in inf["reglas_no_ejecutadas"] if r["regla"].startswith("PDF")]   # STF-* y COH-*: sin su material, aparte
     ids = [r["regla"] for r in pdf]
-    assert ids == ["PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005", "PDF-006"]
+    assert ids == ["PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005", "PDF-006", "PDF-007"]
     assert not set(ids) & set(inf["reglas_ejecutadas"])
     assert "ningun PDF" in pdf[0]["motivo"]
 
@@ -351,14 +351,14 @@ def test_pdf_005_el_tamano_se_detecta_con_el_umbral_de_la_regla(tmp_path):
 
 def test_las_reglas_regionales_estan_marcadas_y_son_avisos():
     reg = {r["id"]: r for r in cargar_reglas() if r["region"] == "regional"}
-    assert set(reg) == {"PDF-003", "PDF-005", "PDF-006"} and all(r["severidad"] == "aviso" for r in reg.values())
+    assert set(reg) == {"PDF-003", "PDF-005", "PDF-006", "PDF-007"} and all(r["severidad"] == "aviso" for r in reg.values())
 
 
 def test_pdf_referenciado_pero_ausente_no_se_declara_como_sin_pdfs(tmp_path):
     inf = validar_paquete(F.roto(tmp_path / "0000", "PDF-REF-AUSENTE"))
     assert "REF-001" in _reglas(inf) and inf["estado"] == "CON_ERRORES"
     motivos = {r["regla"]: r["motivo"] for r in inf["reglas_no_ejecutadas"]}
-    assert set(motivos) - {f"STF-{i:03d}" for i in range(1, 12)} - COH == {"PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005", "PDF-006"}
+    assert set(motivos) - {f"STF-{i:03d}" for i in range(1, 12)} - COH == {"PDF-001", "PDF-002", "PDF-003", "PDF-004", "PDF-005", "PDF-006", "PDF-007"}
     assert all("ninguno accesible" in m for k, m in motivos.items() if k.startswith("PDF"))
 
 
@@ -547,3 +547,56 @@ def test_el_informe_lista_los_pdf_firmados_exentos_y_la_reparacion_no_los_reescr
     with pytest.raises(FixError, match="firmado digitalmente"):
         fpdf.reparar(tmp_path / "copia", [{"regla": "PDF-003", "evidencia": "a.pdf"}], [])
     assert f.read_bytes() == antes
+
+
+def _contexto_pdf(tmp_path):
+    from ectd_validator.engine import Contexto
+    return Contexto(tmp_path, tmp_path / "index.xml", None, [])
+
+
+def test_pdf_007_marca_lo_que_pdf_004_exime_y_respeta_las_exenciones_de_pdf_006(tmp_path):
+    """PDF-007: Helvetica/Arial/TNR/Courier sin embeber SI se marcan (PDF-004 las exime por la spec ICH); 1.0 y 1.2 quedan fuera; cifrado e ilegible no se inspeccionan; Type3 exenta; embebidas no."""
+    from ectd_validator.checkers import pdf
+    regla = [r for r in cargar_reglas() if r["id"] == "PDF-007"][0]
+    assert regla["codigo_oficial"] is None and regla["severidad"] == "aviso" and regla["region"] == "regional"      # NO es un criterio EU: no lleva codigo EU
+    mal, bien, cif, roto, t3 = (tmp_path / n for n in ("mal.pdf", "bien.pdf", "cif.pdf", "roto.pdf", "t3.pdf"))
+    mal.write_bytes(F.pdf_bytes(fuentes=[("Helvetica", False), ("Arial", False), ("TimesNewRoman", False), ("Courier", False), ("ABCDEF+Garamond", True)]))
+    bien.write_bytes(F.pdf_bytes(fuentes=[("Helvetica", True), ("Arial", True)]))
+    cif.write_bytes(F.pdf_bytes(fuentes=[("Helvetica", False)], cifrar=True))
+    roto.write_bytes(b"%PDF-1.4" + chr(10).encode() + b"esto no es un pdf")
+    t3.write_bytes(F.pdf_bytes(fuentes=[("Garamond", False)], modo="type3"))
+    hojas = [("m5/53/a.pdf", mal), ("m5/53/b.pdf", bien), ("m1/eu/10-cover/c.pdf", mal), ("m1/eu/12-form/d.pdf", mal), ("m1/eu/13-other/e.pdf", mal),
+             ("m5/53/f.pdf", cif), ("m5/53/g.pdf", roto), ("m5/53/h.pdf", t3)]
+    hall = pdf._todas_fuentes(_contexto_pdf(tmp_path), regla, hojas)
+    assert sorted((h["evidencia"], h["mensaje"]) for h in hall) == sorted(
+        (ev, "fuente no embebida: " + n) for ev in ("m1/eu/13-other/e.pdf", "m5/53/a.pdf") for n in ("Arial", "Courier", "Helvetica", "TimesNewRoman"))
+    assert all(h["regla"] == "PDF-007" and h["severidad"] == "aviso" and h["codigo_oficial"] is None for h in hall)
+
+
+def test_pdf_007_una_clave_fontfile_con_el_flujo_vacio_no_cuenta_como_embebida(tmp_path):
+    """El arbitro mira el flujo, no la marca: /FontFile presente pero vacio es una fuente sin embeber (y PDF-004, que mira la clave, la da por buena: por eso hay dos reglas)."""
+    import pikepdf
+    from ectd_validator.checkers import pdf
+    regla = [r for r in cargar_reglas() if r["id"] == "PDF-007"][0]
+    p = tmp_path / "v.pdf"
+    p.write_bytes(F.pdf_bytes(fuentes=[("Garamond", True)], lineal=False))
+    with pikepdf.open(str(p), allow_overwriting_input=True) as x:
+        for o in x.objects:
+            if isinstance(o, pikepdf.Dictionary) and "/FontFile" in o:
+                o.FontFile = x.make_stream(b"")
+        x.save(str(p))
+    hall = pdf._todas_fuentes(_contexto_pdf(tmp_path), regla, [("m5/53/v.pdf", p)])
+    assert [(h["evidencia"], h["mensaje"]) for h in hall] == [("m5/53/v.pdf", "fuente no embebida: Garamond")]
+    r4 = [r for r in cargar_reglas() if r["id"] == "PDF-004"][0]
+    assert pdf._fuentes(_contexto_pdf(tmp_path), r4, [("m5/53/v.pdf", p)]) == []              # la regla de la clave no la ve
+
+
+def test_pdf_007_un_pdf_firmado_con_fuentes_sin_embeber_si_es_hallazgo(tmp_path):
+    """A diferencia de PDF-006 (linealizar rompe la firma), las fuentes sin embeber no se arreglan reescribiendo: un firmado se marca igual."""
+    from ectd_validator.checkers import pdf
+    regla = [r for r in cargar_reglas() if r["id"] == "PDF-007"][0]
+    p = tmp_path / "f.pdf"
+    p.write_bytes(F.pdf_bytes(fuentes=[("Helvetica", False)], lineal=False))
+    F.firmar_sintetico(p, "completa")
+    hall = pdf._todas_fuentes(_contexto_pdf(tmp_path), regla, [("m5/53/f.pdf", p)])
+    assert [h["mensaje"] for h in hall] == ["fuente no embebida: Helvetica"]

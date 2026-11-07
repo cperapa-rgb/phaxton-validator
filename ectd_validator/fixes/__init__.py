@@ -33,6 +33,7 @@ MANUAL = {
     "PDF-003": "Reexporte el PDF en version 1.4-1.7.",
     "PDF-004": "Reexporte el PDF embebiendo las fuentes indicadas.",
     "PDF-005": "Reduzca el PDF (optimizacion de imagenes) o confirme el umbral con la agencia.",
+    "PDF-007": "Reexporte el PDF embebiendo TODAS las fuentes, tambien Times, Arial, Courier y las base-14 (en reportlab, registre una TTF libre).",
     "PDF-006": "Guarde el PDF con Fast Web View activo (linealizado), por ejemplo con qpdf --linearize.",
     "CHK-004": "Reintente: los dos arbitros de MD5 no coinciden (revise el entorno).",
     "STF-001": "Regenere el STF con el generador: no cumple la DTD oficial ICH STF 2.2.",

@@ -214,5 +214,74 @@ def _firmado(p) -> bool:
         return False
 
 
-_CHECKS = {"abre": _abre, "cifrado": _cifrado, "version": _version, "fuentes": _fuentes, "tamano": _tamano, "fwv": _fwv}
+def _fuentes_sin_embeber_pikepdf(pdf) -> Set[str]:
+    """Arbitro de PDF-007, con pikepdf (otra superficie que el recorrido de pypdf de PDF-004). Fuente = diccionario /Type /Font alcanzado desde los recursos de cada pagina (heredados) y
+    de los XObject de formulario; Type0 se mira por su descendiente; Type3 queda fuera. Embebida = el descriptor tiene /FontFile, /FontFile2 o /FontFile3 CON flujo no vacio (la clave sola no basta).
+    No se miran los flujos de apariencia de las anotaciones (limite declarado)."""
+    import pikepdf
+    faltan: Set[str] = set()
+    vistos: Set[tuple] = set()
+
+    def con_datos(s) -> bool:
+        return isinstance(s, pikepdf.Stream) and len(s.read_raw_bytes()) > 0
+
+    def fuente(f):
+        sub = str(f.get("/Subtype", ""))
+        if sub == "/Type3":
+            return
+        base = str(f.get("/BaseFont", "/(sin nombre)")).lstrip("/")
+        g = f
+        if sub == "/Type0":
+            desc = f.get("/DescendantFonts")
+            if desc is None or len(desc) == 0:
+                raise ValueError(f"fuente Type0 {base} sin DescendantFonts")
+            g = desc[0]
+        fd = g.get("/FontDescriptor")
+        embebida = fd is not None and any(k in fd and con_datos(fd[k]) for k in ("/FontFile", "/FontFile2", "/FontFile3"))
+        if not embebida:
+            faltan.add(re.sub(r"^[A-Z]{6}[+]", "", base))
+
+    def recursos(res, prof=0):
+        if res is None or prof > 6:
+            return
+        for f in (res.get("/Font") or {}).values():
+            fuente(f)
+        for xo in (res.get("/XObject") or {}).values():
+            clave = xo.objgen
+            if clave != (0, 0) and clave in vistos:
+                continue
+            vistos.add(clave)
+            if str(xo.get("/Subtype", "")) == "/Form":
+                recursos(xo.get("/Resources"), prof + 1)
+
+    for page in pdf.pages:
+        recursos(page.resources)
+    return faltan
+
+
+def _todas_fuentes(ctx, rule, pdfs):
+    """PDF-007: ninguna fuente sin embeber (sin la exencion ICH de TNR/Arial/Courier/base-14). Arbitro pikepdf; los PDF de las carpetas 1.0 y 1.2 (params.exentas) quedan fuera, los cifrados no se inspeccionan
+    (lo dice PDF-002) y uno que pypdf abre y qpdf no se declara hallazgo de error (nunca verde por no poder mirar)."""
+    import pikepdf
+    out = []
+    for href, p, r in _lectores(pdfs):
+        if r.is_encrypted:
+            continue
+        partes = [x.lower() for x in href.replace(chr(92), "/").split("/")]
+        if "m1" in partes and any(x in partes for x in rule["params"]["exentas"]):
+            continue
+        try:
+            with pikepdf.open(str(p)) as pdf:
+                faltan = _fuentes_sin_embeber_pikepdf(pdf)
+        except (pikepdf.PdfError, ValueError, KeyError, TypeError, AttributeError, RecursionError) as e:
+            h = hallazgo(rule, href, f"no se pudieron inspeccionar las fuentes con pikepdf: {type(e).__name__}: {e}")
+            h["severidad"] = "error"
+            out.append(h)
+            continue
+        for nombre in sorted(faltan):
+            out.append(hallazgo(rule, href, f"fuente no embebida: {nombre}"))
+    return out
+
+
+_CHECKS = {"abre": _abre, "cifrado": _cifrado, "version": _version, "fuentes": _fuentes, "tamano": _tamano, "fwv": _fwv, "todas_fuentes": _todas_fuentes}
 CHECKS = _CHECKS

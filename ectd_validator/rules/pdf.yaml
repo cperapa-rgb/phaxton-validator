@@ -48,3 +48,11 @@
   checker: pdf
   params: {check: fwv, exentas: ["10-cover", "12-form"]}
   descripcion: El PDF esta linealizado (Fast Web View), salvo los de las secciones 1.0 y 1.2 (Best Practice del perfil EU eCTD 8.2, no de la spec ICH; severidad aviso).
+- id: PDF-007
+  codigo_oficial: null
+  severidad: aviso
+  region: regional
+  spec_version: "3.2.2"
+  checker: pdf
+  params: {check: todas_fuentes, exentas: ["10-cover", "12-form"]}
+  descripcion: Toda fuente de todo PDF esta embebida, tambien Times New Roman, Arial, Courier y las base-14 que PDF-004 exime por la spec ICH 3.2.2 (buena practica de las especificaciones PDF de la FDA, sin verificar en esta sesion; NO es un criterio del perfil EU eCTD 8.2). Salvo las secciones 1.0 y 1.2; Type3 exenta; una entrada FontFile con el flujo vacio no cuenta como embebida; severidad aviso.

@@ -1,4 +1,4 @@
-"""PDFs del backbone (pypdf): abre, no cifrado, version, fuentes embebidas, tamano anomalo.
+"""PDFs del backbone (pypdf): abre, no cifrado, version, fuentes embebidas, tamano anomalo, Fast Web View.
 
 La especificacion ICH 3.2.2 pide embeber toda fuente que no sea Times New Roman, Arial o Courier (o de la familia
 Acrobat). Rangos de version y tamano maximo son de guias regionales, no de ICH: se marcan como avisos parametrizables.
@@ -167,5 +167,32 @@ def _tamano(ctx, rule, pdfs):
     return out
 
 
-_CHECKS = {"abre": _abre, "cifrado": _cifrado, "version": _version, "fuentes": _fuentes, "tamano": _tamano}
+def _qpdf_linealizado(p) -> bool:
+    import pikepdf
+    try:
+        with pikepdf.open(str(p)) as pdf:
+            return bool(pdf.is_linearized)
+    except pikepdf.PdfError:           # lo que pypdf abrio y qpdf no: no se da por linealizado
+        return False
+
+
+def _fwv(ctx, rule, pdfs):
+    """Fast Web View = PDF linealizado. Dos comprobaciones que tienen que coincidir: la marca /Linearized dentro de los primeros 1024 bytes (lectura directa del fichero) y pikepdf
+    (qpdf) diciendo que sigue linealizado: la marca sola da falso verde con un PDF al que se anadio una actualizacion incremental (conserva la marca y deja de estar linealizado)
+    o con la palabra en un comentario de cabecera. Los PDF de las carpetas de las secciones 1.0 y 1.2 (params.exentas) quedan fuera, como en el criterio EU."""
+    out = []
+    for href, p, r in _lectores(pdfs):
+        if r.is_encrypted:                                  # no se puede inspeccionar: lo dice PDF-002; un PDF ilegible lo dice PDF-001 (no sale de _lectores)
+            continue
+        partes = [x.lower() for x in href.replace(chr(92), "/").split("/")]
+        if "m1" in partes and any(x in partes for x in rule["params"]["exentas"]):
+            continue
+        with open(p, "rb") as f:
+            cabecera = f.read(1024)
+        if cabecera and (b"/Linearized" not in cabecera or not _qpdf_linealizado(p)):
+            out.append(hallazgo(rule, href, "el PDF no esta linealizado (Fast Web View inactivo)"))
+    return out
+
+
+_CHECKS = {"abre": _abre, "cifrado": _cifrado, "version": _version, "fuentes": _fuentes, "tamano": _tamano, "fwv": _fwv}
 CHECKS = _CHECKS

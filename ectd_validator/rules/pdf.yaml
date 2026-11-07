@@ -40,3 +40,11 @@
   checker: pdf
   params: {check: tamano, max_mb: 100}
   descripcion: El PDF no esta vacio y no supera el umbral de tamano (convencion regional, no de la spec ICH).
+- id: PDF-006
+  codigo_oficial: EU 16.BP5
+  severidad: aviso
+  region: regional
+  spec_version: "3.2.2"
+  checker: pdf
+  params: {check: fwv, exentas: ["10-cover", "12-form"]}
+  descripcion: El PDF esta linealizado (Fast Web View), salvo los de las secciones 1.0 y 1.2 (Best Practice del perfil EU eCTD 8.2, no de la spec ICH; severidad aviso).

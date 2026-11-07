@@ -11,7 +11,7 @@ PDF = BASE + "report.pdf"
 XPT = BASE + "dm.xpt"
 
 
-def pdf_bytes(fuentes=(), version=b"%PDF-1.4", cifrar=False, modo="directo", cat_version=None) -> bytes:
+def pdf_bytes(fuentes=(), version=b"%PDF-1.4", cifrar=False, modo="directo", cat_version=None, lineal=True) -> bytes:
     """PDF real generado con pypdf. fuentes: [(nombre, embebida)].
     modo: directo | form (fuente dentro de un Form XObject) | type0 (descendiente CID) | type3 | heredado (recursos
     en el nodo /Pages) | malformado (Type0 con DescendantFonts vacio)."""
@@ -72,7 +72,14 @@ def pdf_bytes(fuentes=(), version=b"%PDF-1.4", cifrar=False, modo="directo", cat
         w.encrypt("clave")
     b = BytesIO()
     w.write(b)
-    return b.getvalue()
+    datos = b.getvalue()
+    if lineal and not cifrar:   # Fast Web View (PDF-006): los PDF de prueba salen linealizados salvo que el caso pida lo contrario
+        import pikepdf
+        with pikepdf.open(BytesIO(datos)) as pdf:
+            sal = BytesIO()
+            pdf.save(sal, linearize=True, force_version=(version.decode().replace("%PDF-", "") if version else "1.4"))
+            datos = sal.getvalue()
+    return datos
 
 
 FICHEROS = {PDF: pdf_bytes(fuentes=[("Arial", False), ("Garamond", True)]),
@@ -129,7 +136,9 @@ def _reescribir_index(d: Path, f):
 def roto(destino: Path, defecto: str) -> Path:
     d = construir(destino)
     if defecto == "CHK-001":      # el fichero cambia despues de calcular el MD5
-        (d / PDF).write_bytes((d / PDF).read_bytes() + NL.encode() + b"% alterado" + NL.encode())
+        datos = (d / PDF).read_bytes()
+        assert b"612" in datos
+        (d / PDF).write_bytes(datos.replace(b"612", b"613", 1))     # misma longitud: no toca la linealizacion, solo cambia el contenido
     elif defecto == "CHK-002":    # una hoja sin checksum
         quitar = ' checksum="%s" checksum-type="md5"' % _md5(FICHEROS[XPT])
         _reescribir_index(d, lambda s: s.replace(quitar, "", 1))
@@ -193,6 +202,8 @@ def roto(destino: Path, defecto: str) -> Path:
         _reemplazar_pdf(d, b"%PDF-1.4" + NL.encode() + b"esto no es un pdf")
     elif defecto == "PDF-001-VACIO":
         _reemplazar_pdf(d, b"")
+    elif defecto == "PDF-006":    # un PDF correcto en todo lo demas, sin Fast Web View
+        _reemplazar_pdf(d, pdf_bytes(fuentes=[("Arial", False), ("Garamond", True)], lineal=False))
     elif defecto == "PDF-002":
         _reemplazar_pdf(d, pdf_bytes(cifrar=True))
     elif defecto == "PDF-002-PERMISOS":

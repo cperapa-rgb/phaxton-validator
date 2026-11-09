@@ -234,3 +234,31 @@ def roto(destino: Path, defecto: str) -> Path:
     else:
         raise ValueError(defecto)
     return d
+
+
+def firmar_sintetico(path, variante="completa"):
+    """Convierte un PDF en uno 'firmado' SINTETICO (no es una firma valida: solo lleva la estructura que dejan las firmas). variantes: completa (AcroForm con SigFlags + campo /Sig con /ByteRange),
+    byterange (solo un diccionario con /ByteRange), tipo_sig (solo un diccionario /Type /Sig). Lo escribe SIN linealizar (pikepdf sin linearize)."""
+    import pikepdf
+    with pikepdf.open(str(path), allow_overwriting_input=True) as pdf:
+        sig = pdf.make_indirect(pikepdf.Dictionary(Contents=pikepdf.String(b"\x00" * 8)))
+        if variante in ("completa", "byterange"):
+            sig.ByteRange = pikepdf.Array([0, 0, 0, 0])
+        if variante in ("completa", "tipo_sig"):
+            sig.Type = pikepdf.Name.Sig
+            sig.Filter = pikepdf.Name.Adobe_PPKLite
+        if variante == "completa":
+            campo = pdf.make_indirect(pikepdf.Dictionary(FT=pikepdf.Name.Sig, T=pikepdf.String("Sig1"), V=sig))
+            pdf.Root.AcroForm = pikepdf.Dictionary(SigFlags=3, Fields=pikepdf.Array([campo]))
+        else:
+            pdf.Root.Sintetico = sig
+        pdf.save(str(path))
+
+
+def con_texto_de_firma_sin_firma(path):
+    """PDF NO firmado cuyo contenido (flujo de la pagina y una cadena del Info) menciona /ByteRange, /Sig y /SigFlags: la estructura no tiene ninguna firma. Sin linealizar."""
+    import pikepdf
+    with pikepdf.open(str(path), allow_overwriting_input=True) as pdf:
+        pdf.pages[0].Contents = pdf.make_stream(b"% /ByteRange [0 1 2 3] /Type /Sig /SigFlags 3")
+        pdf.docinfo["/Subject"] = "/ByteRange /Type /Sig"
+        pdf.save(str(path))

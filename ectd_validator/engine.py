@@ -14,7 +14,7 @@ from .checkers import REGISTRO
 from .checkers.checksums import ArbitroError
 from .checkers.comun import NoAplicable
 
-VERSION = "0.8.2"
+VERSION = "0.8.3"
 SPEC = "ICH eCTD 3.2.2"
 XLINK_NS = ("http://www.w3.org/1999/xlink", "http://www.w3c.org/1999/xlink")
 RULES_DIR = Path(__file__).parent / "rules"
@@ -37,7 +37,7 @@ AVISO_PREPARATORIO = (
 ALCANCE = {
     "valida": ["checksums MD5 (hojas e index-md5.txt)", "index.xml contra la DTD oficial ICH 3.2",
                "estructura y nombres (ICH 3.2.2)", "referencias y ficheros huerfanos",
-               "PDF: apertura, cifrado, version, fuentes embebidas, tamano, Fast Web View (aviso: buena practica PDF, EU 16.BP5 / FDA PDF spec; PDF firmados exentos y declarados)", "index.xml: BOM, invisibles, codificacion",
+               "PDF: apertura, cifrado, version, fuentes embebidas (PDF-004: spec ICH; PDF-007: todas, buena practica FDA), tamano, Fast Web View (aviso: buena practica PDF, EU 16.BP5 / FDA PDF spec; PDF firmados exentos y declarados)", "index.xml: BOM, invisibles, codificacion",
                "study tagging files (STF v2.2): DTD oficial, file-tags de la tabla, referencias a hojas, cobertura de la carpeta del estudio",
                "coherencia STF <-> ts.xpt (STUDYID/SPREFID), presencia de ts.xpt y SSTDTC (region us; lector XPT propio)",
                "coherencia SDTM <-> ADaM en la carpeta del estudio: USUBJID de ADNCA/ADPP en DM, un solo STUDYID, trazabilidad SRCDOM/SRCSEQ de ADNCA a PC y EX y de ADPP a PP (valor y PARAMCD); lector XPT propio"],

@@ -82,7 +82,7 @@ def pdf_bytes(fuentes=(), version=b"%PDF-1.4", cifrar=False, modo="directo", cat
     return datos
 
 
-FICHEROS = {PDF: pdf_bytes(fuentes=[("Arial", False), ("Garamond", True)]),
+FICHEROS = {PDF: pdf_bytes(fuentes=[("Arial", True), ("Garamond", True)]),
             XPT: b"XPT dummy dm" + NL.encode()}
 
 INDEX = (
@@ -203,7 +203,7 @@ def roto(destino: Path, defecto: str) -> Path:
     elif defecto == "PDF-001-VACIO":
         _reemplazar_pdf(d, b"")
     elif defecto == "PDF-006":    # un PDF correcto en todo lo demas, sin Fast Web View
-        _reemplazar_pdf(d, pdf_bytes(fuentes=[("Arial", False), ("Garamond", True)], lineal=False))
+        _reemplazar_pdf(d, pdf_bytes(fuentes=[("Arial", True), ("Garamond", True)], lineal=False))
     elif defecto == "PDF-002":
         _reemplazar_pdf(d, pdf_bytes(cifrar=True))
     elif defecto == "PDF-002-PERMISOS":
@@ -217,6 +217,10 @@ def roto(destino: Path, defecto: str) -> Path:
     elif defecto == "PDF-004-LIMPIO":   # embebida, exentas y subset con prefijo: no debe disparar
         _reemplazar_pdf(d, pdf_bytes(fuentes=[("ABCDEF+Garamond", True), ("TimesNewRoman", False),
                                               ("Courier", False), ("Arial-BoldMT", False)]))
+    elif defecto == "PDF-007":    # Helvetica sin embeber: PDF-004 la exime por la spec ICH, PDF-007 no
+        _reemplazar_pdf(d, pdf_bytes(fuentes=[("Helvetica", False), ("ABCDEF+Garamond", True)]))
+    elif defecto == "PDF-007-LIMPIO":   # todas embebidas, tambien las que la spec ICH exime
+        _reemplazar_pdf(d, pdf_bytes(fuentes=[("TimesNewRoman", True), ("Courier", True), ("Arial-BoldMT", True), ("Helvetica", True)]))
     elif defecto.startswith("PDF-004-M-"):
         modo, embebida = {"PDF-004-M-FORM": ("form", False), "PDF-004-M-TYPE0": ("type0", False),
                           "PDF-004-M-HEREDADO": ("heredado", False), "PDF-004-M-TYPE3": ("type3", False),

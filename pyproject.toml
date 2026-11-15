@@ -26,7 +26,7 @@ phaxton-validator = "ectd_validator.__main__:main"
 packages = { find = { include = ["ectd_validator*"] } }
 
 [tool.setuptools.package-data]
-ectd_validator = ["rules/*.yaml", "spec/*.dtd", "spec/*.json", "spec/*.md"]
+ectd_validator = ["rules/*.yaml", "spec/*.dtd", "spec/*.json", "spec/*.md", "spec/*.xsl"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -38,3 +38,27 @@
   checker: backbone
   params: {check: xml_limpio}
   descripcion: index.xml es UTF-8 sin BOM, sin caracteres invisibles y con la codificacion declarada UTF-8.
+- id: BBN-006
+  codigo_oficial: null
+  severidad: aviso
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: estilo_presente}
+  descripcion: El paquete incluye util/style/ectd-2-0.xsl. Fuente - ICH eCTD Specification v3.2.2 (16-jul-2008), apendice de estructura de directorios, util/style/ectd-n.xsl "should be included" (la version de la hoja usada como referencia). Es la hoja ICH; una hoja que no sea de ICH requiere consultar a la autoridad regional.
+- id: BBN-007
+  codigo_oficial: null
+  severidad: error
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: estilo_intacto}
+  descripcion: La hoja de estilo incluida en util/style es identica a la oficial ICH ectd-2-0.xsl versionada en spec/ (no alterada). Comparacion con el fichero oficial versionado, no con un checksum publicado (no verificado).
+- id: BBN-008
+  codigo_oficial: null
+  severidad: aviso
+  region: ich
+  spec_version: "3.2.2"
+  checker: backbone
+  params: {check: estilo_referenciado}
+  descripcion: index.xml lleva la instruccion xml-stylesheet con href util/style/ectd-2-0.xsl (spec 3.2.2, XML introduction - las primeras lineas del XML incluyen la version, la hoja de estilo y la DTD).

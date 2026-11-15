@@ -13,6 +13,8 @@ from .comun import hallazgo
 
 DTD_OFICIAL = Path(__file__).resolve().parent.parent / "spec" / "ich-ectd-3-2.dtd"
 DTD_EN_PAQUETE = "util/dtd/ich-ectd-3-2.dtd"
+ESTILO_OFICIAL = Path(__file__).resolve().parent.parent / "spec" / "ectd-2-0.xsl"
+ESTILO_EN_PAQUETE = "util/style/ectd-2-0.xsl"
 INVISIBLES_RETIRABLES = (chr(0x200B), chr(0x2060), chr(0xFEFF))
 INVISIBLES_SEMANTICOS = (chr(0x200C), chr(0x200D))  # ZWNJ/ZWJ: pueden ser significativos; no se retiran solos
 INVISIBLES = INVISIBLES_RETIRABLES + INVISIBLES_SEMANTICOS
@@ -82,5 +84,31 @@ def _xml_limpio(ctx, rule):
     return out
 
 
-_CHECKS = {"xml_limpio": _xml_limpio, "dtd_valida": _dtd_valida, "doctype": _doctype, "dtd_presente": _dtd_presente, "dtd_intacta": _dtd_intacta}
+def _estilo_presente(ctx, rule):
+    if not (ctx.root / ESTILO_EN_PAQUETE).is_file():
+        return [hallazgo(rule, ESTILO_EN_PAQUETE, "el paquete no incluye la hoja de estilo ICH en util/style")]
+    return []
+
+
+def _estilo_intacto(ctx, rule):
+    if not ESTILO_OFICIAL.is_file():
+        raise FileNotFoundError(f"falta la hoja de estilo versionada del validador: {ESTILO_OFICIAL}")  # nunca verde por ausencia
+    p = ctx.root / ESTILO_EN_PAQUETE
+    if p.is_file() and sha256_lf(p) != sha256_lf(ESTILO_OFICIAL):
+        return [hallazgo(rule, ESTILO_EN_PAQUETE, "la hoja de estilo del paquete difiere de la oficial ICH ectd-2-0 (no debe alterarse)")]
+    return []
+
+
+def _estilo_referenciado(ctx, rule):
+    """index.xml lleva la instruccion xml-stylesheet (spec 3.2.2: las primeras lineas incluyen version XML, hoja de estilo y DTD)."""
+    for nodo in ctx.tree.getroot().itersiblings(preceding=True):
+        if isinstance(nodo, etree._ProcessingInstruction) and nodo.target == "xml-stylesheet":
+            href = nodo.get("href") or ""
+            if href == ESTILO_EN_PAQUETE:
+                return []
+            return [hallazgo(rule, "index.xml", f"la instruccion xml-stylesheet apunta a {href!r}, se espera {ESTILO_EN_PAQUETE}")]
+    return [hallazgo(rule, "index.xml", f"index.xml no lleva la instruccion xml-stylesheet hacia {ESTILO_EN_PAQUETE}")]
+
+
+_CHECKS = {"estilo_presente": _estilo_presente, "estilo_intacto": _estilo_intacto, "estilo_referenciado": _estilo_referenciado, "xml_limpio": _xml_limpio, "dtd_valida": _dtd_valida, "doctype": _doctype, "dtd_presente": _dtd_presente, "dtd_intacta": _dtd_intacta}
 CHECKS = _CHECKS

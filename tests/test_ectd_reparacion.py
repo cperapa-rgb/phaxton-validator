@@ -12,7 +12,7 @@ from ectd_validator.fixes import FixError, manifiesto, reparar
 
 REPARABLES = [
     ("CHK-001", "CHK-001"), ("CHK-002", "CHK-002"), ("CHK-003", "CHK-003"), ("CHK-003-AUSENTE", "CHK-003"),
-    ("BBN-002", "BBN-002"), ("BBN-003", "BBN-003"), ("BBN-004", "BBN-004"),
+    ("BBN-002", "BBN-002"), ("BBN-003", "BBN-003"), ("BBN-004", "BBN-004"), ("BBN-006", "BBN-006"), ("BBN-007", "BBN-007"), ("BBN-008", "BBN-008"), ("BBN-008-OTRA", "BBN-008"),
     ("BBN-005-BOM", "BBN-005"), ("BBN-005-INVISIBLE", "BBN-005"), ("BBN-005-LATIN1", "BBN-005"),
     ("PDF-002-PERMISOS", "PDF-002"), ("PDF-003", "PDF-003"),
 ]

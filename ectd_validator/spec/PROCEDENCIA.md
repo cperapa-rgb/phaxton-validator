@@ -36,3 +36,14 @@
   (1130, "required file ... altered", es Low; cubierto por BBN-004, que ya es error por otra razon.)
 - Mapeo a nuestros dos niveles: High -> error; Medium y Low -> aviso. Decidido por defecto, REVERSIBLE.
 - La EMA NO se comprobo (el criterio EU v8.x no se pudo localizar): la severidad es la de la FDA y se declara asi en la regla.
+
+## Hoja de estilo ICH ectd-2-0.xsl (anadida 15-nov-2026, lote Y1)
+- `ectd-2-0.xsl`: hoja de estilo oficial ICH eCTD (comentario interno "util/ectd-2-0.xsl, version 2.0, Yokohama, November 17, 2004").
+- Fuente: https://admin.ich.org/sites/default/files/inline-files/ectd-2-0_0.xsl (enlazada desde la pagina de FDA "eCTD Submission
+  Standards for eCTD v3.2.2 and Regional M1"), descargada el 15-nov-2026.
+- SHA-256 (bytes tal cual, 2049 B, sin CRLF): 41bf6aaf78fa1ba736951174c5e3dc6724410f4d5d9332034dac9b2c8d34dcd1. MD5: 3a07a202455e954a2eb203c5bb443f77.
+- Que sea la version publicada por ICH NO esta verificado contra un checksum publicado (el AGES lo compara con uno que no se ha podido consultar): BBN-007 compara con este fichero versionado, no con un valor publicado.
+- Ubicacion en el paquete y referencia: ICH eCTD Specification v3.2.2 (16-jul-2008, PDF de PMDA): util/style/ectd-n.xsl "should be included"
+  (apendice de estructura de directorios, elementos 377-378) y la instruccion xml-stylesheet en las primeras lineas de index.xml
+  (ejemplos con href="util/style/ectd-2-1-x.xsl"; aqui se usa el nombre del fichero oficial, ectd-2-0.xsl).
+- La hoja referencia `util/style/screen.css`; ese fichero NO se incluye (no se ha localizado una fuente oficial): la hoja se ve sin estilos de pantalla.

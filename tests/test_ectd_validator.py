@@ -444,7 +444,7 @@ def test_pdf_006_fast_web_view_exime_1_0_y_1_2_y_no_inspecciona_lo_que_no_se_pue
     from ectd_validator.engine import Contexto
     regla = [r for r in cargar_reglas() if r["id"] == "PDF-006"][0]
     assert regla["codigo_oficial"] == "EU 16.BP5" and regla["severidad"] == "aviso" and regla["region"] == "regional"
-    sin, con, cif, roto = tmp_path / "sin.pdf", tmp_path / "con.pdf", tmp_path / "cif.pdf", tmp_path / "roto.pdf"
+    sin, con, cif, roto = tmp_path / "sin.pdf", tmp_path / "lineal.pdf", tmp_path / "cif.pdf", tmp_path / "roto.pdf"
     sin.write_bytes(F.pdf_bytes(lineal=False))
     con.write_bytes(F.pdf_bytes(lineal=True))
     cif.write_bytes(F.pdf_bytes(cifrar=True))

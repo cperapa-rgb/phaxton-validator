@@ -91,3 +91,32 @@ def test_el_pdf_del_informe_tiene_todas_las_fuentes_embebidas(tmp_path):
     import pytest
     with pytest.raises(RuntimeError, match="NO embebidas"):
         comprobar_fuentes_embebidas(malo)
+
+
+def _fuentes_del_pdf(ruta):
+    import fitz
+    with fitz.open(str(ruta)) as doc:
+        return [(f[3], f[1]) for pg in doc for f in pg.get_fonts(full=True)]
+
+
+def test_t3_el_pdf_con_hallazgos_y_reparacion_no_lleva_ninguna_fuente_sin_embeber(tmp_path):
+    """T3 (deuda 'informe del validador con Helvetica sin embeber'): el PDF REAL del informe, con hallazgos, reglas no ejecutadas y reparacion (las tablas
+    usan estilos que el PDF minimo del test anterior no ejercita), no tiene ni una fuente sin fichero ni ninguna base-14 (Helvetica, Times, Courier)."""
+    rep = reparar(F.roto(tmp_path / "o", "CHK-001"), tmp_path / "c")
+    rutas = escribir_informes(rep["validacion_original"], tmp_path / "out", reparacion=rep)
+    fuentes = _fuentes_del_pdf(rutas["pdf"])
+    assert fuentes, "el PDF no declara ninguna fuente: no se inspecciono material"
+    sin_fichero = [n for n, ext in fuentes if ext == "n/a"]
+    base14 = [n for n, _ in fuentes if n.split("+")[-1].lower().startswith(("helvetica", "times", "courier", "symbol", "zapf"))]
+    assert not sin_fichero and not base14, {"sin_fichero": sin_fichero, "base14": base14, "fuentes": fuentes}
+    assert all("+" in n for n, _ in fuentes), fuentes                       # subconjunto embebido (prefijo ABCDEF+)
+
+
+def test_t3_el_guard_de_fuentes_se_ve_fallar_con_un_pdf_con_helvetica(tmp_path):
+    from reportlab.pdfgen import canvas
+    malo = tmp_path / "malo.pdf"
+    c = canvas.Canvas(str(malo))
+    c.drawString(50, 750, "x")
+    c.save()
+    fuentes = _fuentes_del_pdf(malo)
+    assert [n for n, ext in fuentes if ext == "n/a"], fuentes                # el mismo criterio del test de arriba detecta Helvetica sin embeber

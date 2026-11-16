@@ -25,6 +25,7 @@ def test_info_trae_los_datos_de_frontera():
     d = json.loads(r.stdout)
     assert d["version"] == VERSION and d["aviso_preparatorio"] == AVISO_PREPARATORIO
     assert set(d["carpetas"]) and set(d["stf_tags"])
+    assert d["estilo_ectd_en_paquete"] == "util/style/ectd-2-0.xsl" and d["estilo_ectd"].endswith("ectd-2-0.xsl")
     assert d["dtd_ectd_en_paquete"].endswith("ich-ectd-3-2.dtd") and d["dtd_stf_en_paquete"].endswith("ich-stf-v2-2.dtd")
     from pathlib import Path
     assert Path(d["dtd_ectd"]).is_file() and Path(d["dtd_stf"]).is_file()

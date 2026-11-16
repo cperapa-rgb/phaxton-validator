@@ -6,6 +6,7 @@ from pathlib import Path
 
 NL = chr(10)
 RAIZ_DTD = Path(__file__).resolve().parent.parent / "ectd_validator" / "spec" / "ich-ectd-3-2.dtd"
+RAIZ_XSL = Path(__file__).resolve().parent.parent / "ectd_validator" / "spec" / "ectd-2-0.xsl"
 BASE = "m5/53-clin-stud-rep/531-rep-biopharm-stud/5311-ba-stud-rep/study-1/"
 PDF = BASE + "report.pdf"
 XPT = BASE + "dm.xpt"
@@ -87,6 +88,7 @@ FICHEROS = {PDF: pdf_bytes(fuentes=[("Arial", True), ("Garamond", True)]),
 
 INDEX = (
     '<?xml version="1.0" encoding="UTF-8"?>' + NL +
+    '<?xml-stylesheet type="text/xsl" href="util/style/ectd-2-0.xsl"?>' + NL +
     '<!DOCTYPE ectd:ectd SYSTEM "util/dtd/ich-ectd-3-2.dtd">' + NL +
     '<ectd:ectd xmlns:ectd="http://www.ich.org/ectd" xmlns:xlink="http://www.w3c.org/1999/xlink">' + NL +
     '<m5-clinical-study-reports><m5-3-clinical-study-reports><m5-3-1-reports-of-biopharmaceutic-studies>'
@@ -119,6 +121,8 @@ def construir(destino: Path) -> Path:
         hojas += HOJA.format(id=f"leaf{i}", md5=_md5(datos), href=rel)
     (destino / "util" / "dtd").mkdir(parents=True, exist_ok=True)
     shutil.copyfile(RAIZ_DTD, destino / "util" / "dtd" / "ich-ectd-3-2.dtd")
+    (destino / "util" / "style").mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(RAIZ_XSL, destino / "util" / "style" / "ectd-2-0.xsl")
     _escribir_index(destino, INDEX.format(hojas=hojas))
     return destino
 
@@ -158,6 +162,14 @@ def roto(destino: Path, defecto: str) -> Path:
         _reescribir_index(d, lambda s: s.replace("util/dtd/ich-ectd-3-2.dtd", "otra/ruta.dtd"))
     elif defecto == "BBN-003":
         shutil.rmtree(d / "util")
+    elif defecto == "BBN-006":
+        shutil.rmtree(d / "util" / "style")
+    elif defecto == "BBN-007":
+        (d / "util" / "style" / "ectd-2-0.xsl").write_text("<!-- alterada -->", encoding="utf-8")
+    elif defecto == "BBN-008":
+        _reescribir_index(d, lambda s: s.replace('<?xml-stylesheet type="text/xsl" href="util/style/ectd-2-0.xsl"?>' + NL, "", 1))
+    elif defecto == "BBN-008-OTRA":
+        _reescribir_index(d, lambda s: s.replace("util/style/ectd-2-0.xsl", "otra/hoja.xsl", 1))
     elif defecto == "BBN-004":
         (d / "util" / "dtd" / "ich-ectd-3-2.dtd").write_text("<!-- alterada -->", encoding="utf-8")
     elif defecto == "STR-001":    # nombre con mayusculas y guion bajo, el fichero esta referenciado

@@ -28,6 +28,7 @@ def _info() -> dict:
     spec = Path(backbone.DTD_OFICIAL).parent
     return {"version": VERSION, "huella_codigo": huella_codigo(), "aviso_preparatorio": AVISO_PREPARATORIO, "spec_dir": str(spec),
             "dtd_ectd": str(backbone.DTD_OFICIAL), "dtd_ectd_en_paquete": backbone.DTD_EN_PAQUETE,
+            "estilo_ectd": str(backbone.ESTILO_OFICIAL), "estilo_ectd_en_paquete": backbone.ESTILO_EN_PAQUETE,
             "dtd_stf": str(stf.DTD_STF), "dtd_stf_en_paquete": stf.DTD_STF_EN_PAQUETE, "version_hoja_stf": stf.VERSION_HOJA,
             "carpetas": carpetas(), "stf_tags": stf.tags_validos()}
 

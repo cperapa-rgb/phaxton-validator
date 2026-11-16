@@ -26,7 +26,7 @@ def _reglas(inf):
 def test_paquete_limpio_es_valido_y_dice_que_corrio(tmp_path):
     inf = validar_paquete(F.construir(tmp_path / "0000"))
     assert inf["estado"] == "VALIDO" and inf["hallazgos"] == []
-    assert inf["hojas_inspeccionadas"] == 2 and len(inf["reglas_ejecutadas"]) == 21
+    assert inf["hojas_inspeccionadas"] == 2 and len(inf["reglas_ejecutadas"]) == 24
     # el paquete de juguete no trae STF: las 7 reglas STF-001..007 no tienen material y STF-008 es regional (us) y no se pidio:
     # las 8 NO se ejecutan y se declaran (nunca verde por ausencia)
     stf = {f"STF-{i:03d}" for i in range(1, 12)} | {f"COH-{i:03d}" for i in range(1, 6)}
@@ -38,7 +38,9 @@ CASOS = [("CHK-001", {"CHK-001"}, "CON_ERRORES"), ("CHK-002", {"CHK-002", "BBN-0
          ("CHK-003", {"CHK-003"}, "CON_ERRORES"), ("CHK-003-AUSENTE", {"CHK-003"}, "CON_ERRORES"),
          ("REF-001", {"REF-001"}, "CON_ERRORES"), ("REF-002", {"REF-002"}, "CON_ERRORES"),
          ("BBN-001", {"BBN-001"}, "CON_ERRORES"), ("BBN-001-OPERATION", {"BBN-001"}, "CON_ERRORES"),
-         ("BBN-002", {"BBN-002"}, "VALIDO_CON_AVISOS"), ("BBN-003", {"BBN-003"}, "VALIDO_CON_AVISOS"),
+         ("BBN-002", {"BBN-002"}, "VALIDO_CON_AVISOS"), ("BBN-003", {"BBN-003", "BBN-006"}, "VALIDO_CON_AVISOS"),   # sin util tampoco hay hoja de estilo
+         ("BBN-006", {"BBN-006"}, "VALIDO_CON_AVISOS"), ("BBN-007", {"BBN-007"}, "CON_ERRORES"),
+         ("BBN-008", {"BBN-008"}, "VALIDO_CON_AVISOS"), ("BBN-008-OTRA", {"BBN-008"}, "VALIDO_CON_AVISOS"),
          ("BBN-004", {"BBN-004"}, "CON_ERRORES"), ("STR-001", {"STR-001"}, "CON_ERRORES"),
          ("STR-001-F-65", {"STR-001"}, "CON_ERRORES"), ("STR-001-F-SINEXT", {"STR-001"}, "CON_ERRORES"),
          ("STR-001-F-DOSEXT", {"STR-001"}, "CON_ERRORES"), ("STR-001-DIR-PUNTO", {"STR-001"}, "CON_ERRORES"),
@@ -442,7 +444,7 @@ def test_pdf_006_fast_web_view_exime_1_0_y_1_2_y_no_inspecciona_lo_que_no_se_pue
     from ectd_validator.engine import Contexto
     regla = [r for r in cargar_reglas() if r["id"] == "PDF-006"][0]
     assert regla["codigo_oficial"] == "EU 16.BP5" and regla["severidad"] == "aviso" and regla["region"] == "regional"
-    sin, con, cif, roto = tmp_path / "sin.pdf", tmp_path / "con.pdf", tmp_path / "cif.pdf", tmp_path / "roto.pdf"
+    sin, con, cif, roto = tmp_path / "sin.pdf", tmp_path / "lineal.pdf", tmp_path / "cif.pdf", tmp_path / "roto.pdf"
     sin.write_bytes(F.pdf_bytes(lineal=False))
     con.write_bytes(F.pdf_bytes(lineal=True))
     cif.write_bytes(F.pdf_bytes(cifrar=True))

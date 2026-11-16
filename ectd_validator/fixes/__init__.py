@@ -54,7 +54,7 @@ MANUAL = {
     "COH-005": "Regenere ADPP desde PP: SRCSEQ debe ser el PPSEQ del registro de origen, AVAL su PPSTRESN y PARAMCD su PPTESTCD.",
 }
 # Reglas con arreglo automatico (cualquier otra regla DEBE estar en MANUAL: lo comprueba un test).
-AUTOMATICAS = {"CHK-001", "CHK-002", "CHK-003", "BBN-002", "BBN-003", "BBN-004", "BBN-005", "PDF-002", "PDF-003"}
+AUTOMATICAS = {"CHK-001", "CHK-002", "CHK-003", "BBN-002", "BBN-003", "BBN-004", "BBN-005", "BBN-006", "BBN-007", "BBN-008", "PDF-002", "PDF-003"}
 # Reglas cuyo texto de evidencia lleva numero de linea y se desplaza al editar: se comparan solo por regla.
 POR_REGLA = {"BBN-001"}
 
@@ -148,7 +148,7 @@ def _reparar_en_copia(origen, destino, antes, inicial, modulos) -> dict:
 
     # Contenido de ficheros -> XML -> DOCTYPE/DTD -> checksums (al final: dependen de todo lo anterior).
     for fn, reglas in ((pdf.reparar, ("PDF-002", "PDF-003")), (xml.reparar, ("BBN-005",)),
-                       (dtd.reparar, ("BBN-002", "BBN-003", "BBN-004"))):
+                       (dtd.reparar, ("BBN-002", "BBN-003", "BBN-004", "BBN-006", "BBN-007", "BBN-008"))):
         hall = [h for r in reglas for h in por_regla.get(r, [])]
         if hall:
             aplicar(fn, hall)

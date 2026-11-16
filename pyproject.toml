@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "phaxton-validator"
-version = "0.8.3"
+version = "0.8.4"
 description = "Technical validator for eCTD v3.2.2 packages (Module 5 focus): checks form, repairs only on a copy"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,7 +26,7 @@ phaxton-validator = "ectd_validator.__main__:main"
 packages = { find = { include = ["ectd_validator*"] } }
 
 [tool.setuptools.package-data]
-ectd_validator = ["rules/*.yaml", "spec/*.dtd", "spec/*.json", "spec/*.md"]
+ectd_validator = ["rules/*.yaml", "spec/*.dtd", "spec/*.json", "spec/*.md", "spec/*.xsl"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

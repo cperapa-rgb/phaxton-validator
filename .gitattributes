@@ -2,3 +2,4 @@ tests/fixtures/** -text
 *.dtd -text
 *.xpt binary
 *.pdf binary
+*.xsl -text

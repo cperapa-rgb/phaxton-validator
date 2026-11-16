@@ -14,6 +14,11 @@ original, with a per-change log.
 - Single-sequence packages only; lifecycle (append/replace) not supported.
 - One dogfooding cycle so far, on synthetic data. It found real defects in
   our own packages before release — that is what it is for.
+- Scope: ICH eCTD 3.2.2 and the FDA criteria it cites. EU regional (Module 1)
+  criteria are OUT of scope (owner decision, 15 Nov 2026): the report lists
+  which EU criteria were evaluated and which were not, and never claims EU
+  validity. The ICH stylesheet (util/style/ectd-2-0.xsl) and its reference in
+  index.xml are checked (BBN-006 to BBN-008).
 - Every run reports how many rules it executed and how many it did not,
   with reasons. It never reports "clean" without saying against what.
 

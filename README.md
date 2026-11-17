@@ -29,7 +29,7 @@ original, with a per-change log.
 
 ## Contact
 
-cperapa@fractalpk.es
+cperapa@gmail.com
 
 ## License
 
